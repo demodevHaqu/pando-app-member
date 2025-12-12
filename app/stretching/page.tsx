@@ -8,7 +8,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import { MOCK_STRETCHING_VIDEOS, MOCK_STRETCHING_ROUTINES } from '@/data/mock/stretching';
-import { Play, Clock, Eye, Heart, Filter, Zap } from 'lucide-react';
+import { Play, Clock, Eye, Heart, Filter, Zap, Plus } from 'lucide-react';
 
 export default function StretchingPage() {
   const router = useRouter();
@@ -87,13 +87,38 @@ export default function StretchingPage() {
                     <Button
                       variant="energy"
                       size="sm"
-                      onClick={() => router.push(`/stretching/video/${routine.videos[0].id}`)}
+                      onClick={() => router.push(`/stretching/routine/routine1`)}
                     >
                       시작
                     </Button>
                   </div>
                 </Card>
               ))}
+            </div>
+          </Card>
+        </motion.div>
+
+        {/* 나만의 루틴 만들기 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+        >
+          <Card
+            variant="glass"
+            glow
+            onClick={() => router.push('/stretching/create-routine')}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-lg bg-gradient-energy flex items-center justify-center">
+                <Plus size={24} className="text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-white mb-1">나만의 루틴 만들기</h3>
+                <p className="text-xs text-gray-400">
+                  원하는 스트레칭 영상을 조합해 나만의 루틴을 만들어보세요
+                </p>
+              </div>
             </div>
           </Card>
         </motion.div>

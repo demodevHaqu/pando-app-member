@@ -92,9 +92,8 @@ export default function NotificationsPage() {
     if (!notification.isRead) {
       handleMarkAsRead(notification.id);
     }
-    if (notification.actionUrl) {
-      router.push(notification.actionUrl);
-    }
+    // 알림 상세 페이지로 이동
+    router.push(`/notifications/${notification.id}`);
   };
 
   const filterTypes = ['all', 'pt', 'gx', 'renewal', 'achievement'];

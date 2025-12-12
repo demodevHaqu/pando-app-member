@@ -57,20 +57,17 @@ export default function CheckoutPage() {
     {
       id: 'card' as const,
       name: '신용/체크카드',
-      icon: <CreditCard size={24} />,
-      color: 'electric-blue',
+      icon: <CreditCard size={24} className="text-electric-blue" />,
     },
     {
       id: 'kakao' as const,
       name: '카카오페이',
-      icon: <Smartphone size={24} />,
-      color: 'energy-orange',
+      icon: <Smartphone size={24} className="text-[#FEE500]" />,
     },
     {
       id: 'naver' as const,
       name: '네이버페이',
-      icon: <Smartphone size={24} />,
-      color: 'neon-green',
+      icon: <Smartphone size={24} className="text-neon-green" />,
     },
   ];
 
@@ -242,9 +239,7 @@ export default function CheckoutPage() {
                 }
               >
                 <div className="flex items-center gap-3">
-                  <div
-                    className={`w-10 h-10 glass rounded-lg flex items-center justify-center text-${method.color}`}
-                  >
+                  <div className="w-10 h-10 glass rounded-lg flex items-center justify-center">
                     {method.icon}
                   </div>
                   <div className="flex-1">

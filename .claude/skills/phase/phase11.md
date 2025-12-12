@@ -392,7 +392,7 @@ export default function PostDetailPage() {
           <Card>
             {/* 헤더 */}
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
+              <div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
                 {post.memberImage ? (
                   <img
                     src={post.memberImage}
@@ -472,7 +472,7 @@ export default function PostDetailPage() {
             {comments.map((comment, idx) => (
               <Card key={comment.id}>
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full overflow-hidden shrink-0">
                     {comment.memberImage ? (
                       <img
                         src={comment.memberImage}

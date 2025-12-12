@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 384" width="384" height="384">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0D0D12"/>
+      <stop offset="100%" style="stop-color:#1A1A24"/>
+    </linearGradient>
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B35"/>
+      <stop offset="100%" style="stop-color:#FF8C5A"/>
+    </linearGradient>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00D9FF"/>
+      <stop offset="100%" style="stop-color:#00B8E6"/>
+    </linearGradient>
+  </defs>
+  <rect width="384" height="384" rx="74.88" fill="url(#bgGrad)"/>
+  <g opacity="0.1" stroke="#00D9FF" stroke-width="0.768">
+    <line x1="96" y1="0" x2="96" y2="384"/>
+    <line x1="192" y1="0" x2="192" y2="384"/>
+    <line x1="288" y1="0" x2="288" y2="384"/>
+    <line x1="0" y1="96" x2="384" y2="96"/>
+    <line x1="0" y1="192" x2="384" y2="192"/>
+    <line x1="0" y1="288" x2="384" y2="288"/>
+  </g>
+  <rect x="97.536" y="74.88" width="37.632000000000005" height="233.856" rx="7.68" fill="url(#orangeGrad)"/>
+  <path d="M 116.352 74.88
+           L 210.048 74.88
+           Q 284.928 74.88 284.928 150.144
+           Q 284.928 225.024 210.048 225.024
+           L 116.352 225.024"
+        fill="none"
+        stroke="url(#orangeGrad)"
+        stroke-width="37.632000000000005"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+  <circle cx="284.928" cy="284.928" r="22.656" fill="url(#blueGrad)"/>
+  <circle cx="284.928" cy="284.928" r="11.136000000000001" fill="#0D0D12"/>
+  <circle cx="284.928" cy="284.928" r="33.792" fill="none" stroke="#00D9FF" stroke-width="1.536" opacity="0.5"/>
+  <circle cx="284.928" cy="284.928" r="44.928000000000004" fill="none" stroke="#00D9FF" stroke-width="0.768" opacity="0.3"/>
+</svg>

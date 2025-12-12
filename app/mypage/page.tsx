@@ -18,6 +18,10 @@ import {
   Target,
   Calendar,
   Zap,
+  Clock,
+  MapPin,
+  Video,
+  Gift,
 } from 'lucide-react';
 import {
   ModernCard,
@@ -44,9 +48,13 @@ export default function MyPage() {
 
   const menuItems = [
     { icon: <User size={20} />, label: '프로필 수정', path: '/mypage/profile', color: 'blue' as const },
-    { icon: <CreditCard size={20} />, label: '결제 내역', path: '/payment/history', color: 'orange' as const },
-    { icon: <Award size={20} />, label: '보상 현황', path: '/rewards', color: 'green' as const },
-    { icon: <FileText size={20} />, label: '운동 보고서', path: '/report', color: 'pink' as const },
+    { icon: <CreditCard size={20} />, label: '회원권 정보', path: '/membership', color: 'purple' as const },
+    { icon: <MapPin size={20} />, label: '방문 기록', path: '/mypage/visit-history', color: 'green' as const },
+    { icon: <Clock size={20} />, label: '이용 내역', path: '/mypage/usage-history', color: 'orange' as const },
+    { icon: <Award size={20} />, label: '보상 현황', path: '/rewards', color: 'pink' as const },
+    { icon: <Gift size={20} />, label: '리워드 사용', path: '/rewards/use', color: 'green' as const },
+    { icon: <Video size={20} />, label: '내 운동 영상', path: '/ugc/upload', color: 'blue' as const },
+    { icon: <FileText size={20} />, label: '운동 보고서', path: '/report', color: 'orange' as const },
     { icon: <Bell size={20} />, label: '알림 설정', path: '/mypage/settings', color: 'purple' as const },
     { icon: <Settings size={20} />, label: '환경 설정', path: '/mypage/settings', color: 'blue' as const },
     { icon: <HelpCircle size={20} />, label: '고객센터', path: '/support', color: 'orange' as const },

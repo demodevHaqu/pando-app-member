@@ -181,8 +181,8 @@ export default function RewardsPage() {
           >
             <SectionTitle
               title="포인트 내역"
-              action="포인트 사용"
-              onAction={() => router.push('/payment/checkout')}
+              action="리워드 사용"
+              onAction={() => router.push('/rewards/use')}
             />
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {MOCK_POINT_HISTORY.map((history, index) => (
@@ -240,7 +240,7 @@ export default function RewardsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <SectionTitle title="획득한 배지" />
+            <SectionTitle title="획득한 배지" action="전체 보기" onAction={() => router.push('/rewards/badges')} />
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
               {MOCK_BADGES.map((badge, index) => (
                 <motion.div
