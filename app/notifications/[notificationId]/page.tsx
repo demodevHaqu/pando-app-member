@@ -44,7 +44,7 @@ const MOCK_NOTIFICATIONS: Record<
     type: 'reservation',
     title: 'PT 예약 확정',
     message: '강동원 트레이너와의 PT 예약이 확정되었습니다.',
-    detail: `안녕하세요, PANDO 회원님!
+    detail: `안녕하세요, Fit Genie 회원님!
 
 강동원 트레이너와의 PT 예약이 확정되었습니다.
 
@@ -143,7 +143,7 @@ const MOCK_NOTIFICATIONS: Record<
     type: 'system',
     title: '앱 업데이트 안내',
     message: '새로운 기능이 추가되었습니다.',
-    detail: `📱 PANDO 앱 업데이트 안내
+    detail: `📱 Fit Genie 앱 업데이트 안내
 
 버전 2.5.0이 출시되었습니다!
 

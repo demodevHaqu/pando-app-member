@@ -33,7 +33,7 @@ function PaymentSuccessContent() {
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: 'PANDO 결제 완료',
+        title: 'Fit Genie 결제 완료',
         text: `${paymentInfo.productName} 결제가 완료되었습니다.`,
       });
     } else {

@@ -211,7 +211,7 @@ export default function HomePage() {
 
   // 로그인 상태 확인
   useEffect(() => {
-    const authData = localStorage.getItem('pando-auth');
+    const authData = localStorage.getItem('fitgenie-auth');
     if (authData) {
       try {
         const parsed = JSON.parse(authData);
@@ -233,7 +233,7 @@ export default function HomePage() {
 
   // 로그아웃 처리
   const handleLogout = () => {
-    localStorage.removeItem('pando-auth');
+    localStorage.removeItem('fitgenie-auth');
     router.push('/login');
   };
 
@@ -304,10 +304,10 @@ export default function HomePage() {
               justifyContent: 'center',
               boxShadow: '0 4px 15px rgba(0, 217, 255, 0.3)',
             }}>
-              <span style={{ color: 'white', fontWeight: 'bold', fontSize: '20px' }}>P</span>
+              <span style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}>FG</span>
             </div>
             <div>
-              <h1 style={{ color: 'white', fontWeight: 'bold', fontSize: '18px', margin: 0 }}>PANDO</h1>
+              <h1 style={{ color: 'white', fontWeight: 'bold', fontSize: '18px', margin: 0 }}>Fit Genie</h1>
               <p style={{ color: '#6B7280', fontSize: '12px', margin: 0 }}>AI Fitness</p>
             </div>
           </div>

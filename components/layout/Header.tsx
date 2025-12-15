@@ -101,9 +101,9 @@ export default function Header({
                 justifyContent: 'center',
                 boxShadow: '0 2px 10px rgba(0, 217, 255, 0.3)',
               }}>
-                <span style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}>P</span>
+                <span style={{ color: 'white', fontWeight: 'bold', fontSize: '14px' }}>FG</span>
               </div>
-              <span style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}>PANDO</span>
+              <span style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}>Fit Genie</span>
             </div>
           )}
           {title && (

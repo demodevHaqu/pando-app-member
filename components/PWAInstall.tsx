@@ -246,7 +246,7 @@ export default function PWAInstall() {
               borderTop: '1px solid rgba(255, 255, 255, 0.1)',
             }}>
               <p style={{ fontSize: '14px', color: '#9CA3AF', textAlign: 'center' }}>
-                앱처럼 전체 화면으로 PANDO를 이용할 수 있어요
+                앱처럼 전체 화면으로 Fit Genie를 이용할 수 있어요
               </p>
             </div>
           </motion.div>

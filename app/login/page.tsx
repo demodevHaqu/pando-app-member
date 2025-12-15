@@ -19,7 +19,7 @@ import {
 
 // 지정된 아이디/비밀번호
 const PRESET_CREDENTIALS = {
-  id: 'pando',
+  id: 'fitgenie',
   password: '1234',
 };
 
@@ -43,7 +43,7 @@ export default function LoginPage() {
 
     if (trimmedId === PRESET_CREDENTIALS.id && trimmedPassword === PRESET_CREDENTIALS.password) {
       // 로그인 성공 - localStorage에 저장
-      localStorage.setItem('pando-auth', JSON.stringify({
+      localStorage.setItem('fitgenie-auth', JSON.stringify({
         isLoggedIn: true,
         userId: trimmedId,
         loginTime: new Date().toISOString(),
@@ -98,7 +98,7 @@ export default function LoginPage() {
           WebkitTextFillColor: 'transparent',
           marginBottom: '8px',
         }}>
-          PANDO
+          Fit Genie
         </h1>
         <p style={{ color: '#9CA3AF', fontSize: '14px' }}>
           스마트 피트니스 멤버 앱
@@ -251,7 +251,7 @@ export default function LoginPage() {
           fontSize: '14px',
         }}>
           <span style={{ color: '#9CA3AF' }}>
-            ID: <span style={{ color: 'white', fontWeight: 'bold' }}>pando</span>
+            ID: <span style={{ color: 'white', fontWeight: 'bold' }}>fitgenie</span>
           </span>
           <span style={{ color: '#9CA3AF' }}>
             PW: <span style={{ color: 'white', fontWeight: 'bold' }}>1234</span>
@@ -270,7 +270,7 @@ export default function LoginPage() {
         }}
       >
         <p style={{ color: '#6B7280', fontSize: '12px' }}>
-          © 2025 PANDO Fitness. All rights reserved.
+          © 2025 Fit Genie. All rights reserved.
         </p>
       </motion.div>
     </div>

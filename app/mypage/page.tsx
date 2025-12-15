@@ -276,8 +276,8 @@ export default function MyPage() {
 
         {/* App Version */}
         <div style={{ textAlign: 'center', padding: '16px 0' }}>
-          <p style={{ fontSize: '13px', color: '#6B7280', margin: 0 }}>PANDO Fitness v1.0.0</p>
-          <p style={{ fontSize: '11px', color: '#4B5563', margin: '4px 0 0' }}>© 2025 PANDO. All rights reserved.</p>
+          <p style={{ fontSize: '13px', color: '#6B7280', margin: 0 }}>Fit Genie v1.0.0</p>
+          <p style={{ fontSize: '11px', color: '#4B5563', margin: '4px 0 0' }}>© 2025 Fit Genie. All rights reserved.</p>
         </div>
       </div>
     </div>

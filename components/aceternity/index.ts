@@ -1,4 +1,4 @@
-// Aceternity UI Components for PANDO Fitness App
+// Aceternity UI Components for Fit Genie App
 export { Spotlight, SpotlightCard } from "./spotlight";
 export { MovingBorder, MovingBorderGradient } from "./moving-border";
 export { BackgroundBeams, BackgroundBeamsWithCollision } from "./background-beams";

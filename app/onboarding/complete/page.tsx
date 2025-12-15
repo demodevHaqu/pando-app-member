@@ -80,7 +80,7 @@ export default function OnboardingCompletePage() {
           }}>
             환영합니다!
           </h1>
-          <p style={{ fontSize: '14px', color: '#9CA3AF' }}>PANDO Fitness에 가입했습니다</p>
+          <p style={{ fontSize: '14px', color: '#9CA3AF' }}>Fit Genie에 가입했습니다</p>
         </motion.div>
 
         {/* AI recommendations */}

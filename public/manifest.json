@@ -1,6 +1,6 @@
 {
-  "name": "PANDO Fitness",
-  "short_name": "PANDO",
+  "name": "Fit Genie",
+  "short_name": "Fit Genie",
   "description": "AI 기반 스마트 피트니스 센터",
   "start_url": "/",
   "scope": "/",
