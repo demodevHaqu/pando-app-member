@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
   ModernCard,
@@ -15,6 +16,7 @@ import { MOCK_FMS_REPORT } from '@/data/mock/reports';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 
 export default function FMSDetailPage() {
+  const router = useRouter();
   const report = MOCK_FMS_REPORT;
 
   const chartData = Object.entries(report.scores).map(([key, value]) => {
@@ -269,7 +271,7 @@ export default function FMSDetailPage() {
                 </p>
               </div>
             </div>
-            <PrimaryButton fullWidth>
+            <PrimaryButton fullWidth onClick={() => router.push('/routine')}>
               루틴 시작하기
             </PrimaryButton>
           </FeatureCard>

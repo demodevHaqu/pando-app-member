@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
@@ -11,12 +11,23 @@ import {
   Star,
   TrendingUp,
   Bell,
-  Target
+  Target,
+  LogOut,
+  User,
+  Calendar,
+  Clock,
 } from 'lucide-react';
 import { MOCK_MEMBER } from '@/data/mock/members';
-import { MOCK_ROUTINES } from '@/data/mock/routines';
+import { MOCK_ROUTINES, AI_RECOMMENDED_ROUTINES } from '@/data/mock/routines';
 import { MOCK_GX_CLASSES } from '@/data/mock/gxClasses';
 import { MOCK_NOTIFICATIONS } from '@/data/mock/notifications';
+import {
+  MOCK_PT_MEMBERSHIP,
+  MOCK_TRAINERS,
+  getNextPTSession,
+  getPTRemainingSessions,
+  hasPTMembership,
+} from '@/data/mock/trainers';
 
 // Modern Card Component
 const ModernCard = ({
@@ -192,10 +203,74 @@ const ProgressBar = ({
 
 export default function HomePage() {
   const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const member = MOCK_MEMBER;
-  const todayRoutine = MOCK_ROUTINES[0];
   const todayGX = MOCK_GX_CLASSES.slice(0, 3);
   const unreadCount = MOCK_NOTIFICATIONS.filter(n => !n.isRead).length;
+
+  // 로그인 상태 확인
+  useEffect(() => {
+    const authData = localStorage.getItem('pando-auth');
+    if (authData) {
+      try {
+        const parsed = JSON.parse(authData);
+        if (parsed.isLoggedIn) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+          router.push('/login');
+        }
+      } catch {
+        setIsAuthenticated(false);
+        router.push('/login');
+      }
+    } else {
+      setIsAuthenticated(false);
+      router.push('/login');
+    }
+  }, [router]);
+
+  // 로그아웃 처리
+  const handleLogout = () => {
+    localStorage.removeItem('pando-auth');
+    router.push('/login');
+  };
+
+  // 로딩 중일 때
+  if (isAuthenticated === null) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: '#0D0D12',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            width: '60px',
+            height: '60px',
+            borderRadius: '16px',
+            background: 'linear-gradient(135deg, #00D9FF, #7209B7)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 16px',
+            animation: 'pulse 1.5s ease-in-out infinite',
+          }}>
+            <span style={{ color: 'white', fontWeight: 'bold', fontSize: '24px' }}>P</span>
+          </div>
+          <p style={{ color: '#9CA3AF', fontSize: '14px' }}>로딩중...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 인증되지 않은 경우 (리다이렉트 중)
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: '#0D0D12' }}>
@@ -214,7 +289,10 @@ export default function HomePage() {
           justifyContent: 'space-between',
           padding: '16px 20px',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div
+            onClick={() => router.push('/')}
+            style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
+          >
             {/* Logo */}
             <div style={{
               width: '44px',
@@ -234,46 +312,169 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Notification */}
-          <button
-            onClick={() => router.push('/notifications')}
-            style={{
-              position: 'relative',
-              width: '44px',
-              height: '44px',
-              borderRadius: '14px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-            }}
-          >
-            <Bell size={20} color="#9CA3AF" />
-            {unreadCount > 0 && (
-              <span style={{
-                position: 'absolute',
-                top: '-4px',
-                right: '-4px',
-                width: '20px',
-                height: '20px',
-                borderRadius: '50%',
-                background: '#FF006E',
-                color: 'white',
-                fontSize: '11px',
-                fontWeight: 'bold',
+          {/* Right Side Buttons */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {/* Notification */}
+            <button
+              onClick={() => router.push('/notifications')}
+              style={{
+                position: 'relative',
+                width: '44px',
+                height: '44px',
+                borderRadius: '14px',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 0 10px rgba(255, 0, 110, 0.5)',
-              }}>
-                {unreadCount}
-              </span>
-            )}
-          </button>
+                cursor: 'pointer',
+              }}
+            >
+              <Bell size={20} color="#9CA3AF" />
+              {unreadCount > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: '-4px',
+                  right: '-4px',
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '50%',
+                  background: '#FF006E',
+                  color: 'white',
+                  fontSize: '11px',
+                  fontWeight: 'bold',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 0 10px rgba(255, 0, 110, 0.5)',
+                }}>
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+
+            {/* MyPage Button */}
+            <button
+              onClick={() => router.push('/mypage')}
+              style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '14px',
+                background: 'rgba(114, 9, 183, 0.1)',
+                border: '1px solid rgba(114, 9, 183, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+              }}
+            >
+              <User size={20} color="#7209B7" />
+            </button>
+
+            {/* Logout Button */}
+            <button
+              onClick={() => setShowLogoutConfirm(true)}
+              style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '14px',
+                background: 'rgba(255, 107, 53, 0.1)',
+                border: '1px solid rgba(255, 107, 53, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+              }}
+            >
+              <LogOut size={20} color="#FF6B35" />
+            </button>
+          </div>
         </div>
       </header>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div
+          onClick={() => setShowLogoutConfirm(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 50,
+            background: 'rgba(0, 0, 0, 0.8)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+          }}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: '100%',
+              maxWidth: '320px',
+              background: 'linear-gradient(145deg, #1A1A24, #0D0D12)',
+              borderRadius: '20px',
+              padding: '24px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+            }}
+          >
+            <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+              <div style={{
+                width: '56px',
+                height: '56px',
+                borderRadius: '16px',
+                background: 'rgba(255, 107, 53, 0.15)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 16px',
+              }}>
+                <LogOut size={28} color="#FF6B35" />
+              </div>
+              <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+                로그아웃
+              </h3>
+              <p style={{ fontSize: '14px', color: '#9CA3AF' }}>
+                정말 로그아웃 하시겠습니까?
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                style={{
+                  padding: '14px',
+                  borderRadius: '12px',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  color: 'white',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                }}
+              >
+                취소
+              </button>
+              <button
+                onClick={handleLogout}
+                style={{
+                  padding: '14px',
+                  borderRadius: '12px',
+                  background: 'linear-gradient(135deg, #FF6B35, #FF006E)',
+                  border: 'none',
+                  color: 'white',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 15px rgba(255, 107, 53, 0.3)',
+                }}
+              >
+                로그아웃
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       <div style={{ padding: '24px 20px 120px 20px', display: 'flex', flexDirection: 'column', gap: '28px' }}>
         {/* Greeting Section */}
@@ -311,11 +512,130 @@ export default function HomePage() {
           </div>
         </motion.section>
 
-        {/* Quick Stats */}
+        {/* QR Scan Banner - 눈에 띄는 큰 배너 */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <div
+            onClick={() => router.push('/qr-scan')}
+            style={{
+              position: 'relative',
+              borderRadius: '24px',
+              padding: '3px',
+              background: 'linear-gradient(135deg, #00D9FF, #39FF14, #00D9FF)',
+              cursor: 'pointer',
+              overflow: 'hidden',
+            }}
+          >
+            {/* Animated shine effect */}
+            <motion.div
+              animate={{ x: ['-100%', '200%'] }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 2 }}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '50%',
+                height: '100%',
+                background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)',
+                zIndex: 10,
+              }}
+            />
+            <div style={{
+              background: 'linear-gradient(145deg, rgba(0, 217, 255, 0.15), #0D0D12)',
+              borderRadius: '21px',
+              padding: '24px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                {/* QR Icon */}
+                <div style={{
+                  width: '72px',
+                  height: '72px',
+                  borderRadius: '20px',
+                  background: 'linear-gradient(135deg, #00D9FF, #39FF14)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 8px 32px rgba(0, 217, 255, 0.4)',
+                  flexShrink: 0,
+                }}>
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="3" height="3" />
+                    <rect x="18" y="14" width="3" height="3" />
+                    <rect x="14" y="18" width="3" height="3" />
+                    <rect x="18" y="18" width="3" height="3" />
+                  </svg>
+                </div>
+
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                    <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: 'white', margin: 0 }}>
+                      QR 스캔
+                    </h3>
+                    <span style={{
+                      padding: '4px 10px',
+                      borderRadius: '12px',
+                      background: 'rgba(57, 255, 20, 0.2)',
+                      color: '#39FF14',
+                      fontSize: '11px',
+                      fontWeight: 'bold',
+                    }}>
+                      AI 자세분석
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '14px', color: '#9CA3AF', margin: 0, lineHeight: 1.5 }}>
+                    기구 QR을 스캔하고 AI가 자세를 분석해드려요
+                  </p>
+                </div>
+
+                <ChevronRight size={28} color="#00D9FF" />
+              </div>
+
+              {/* Feature Tags */}
+              <div style={{
+                display: 'flex',
+                gap: '8px',
+                marginTop: '16px',
+                paddingTop: '16px',
+                borderTop: '1px solid rgba(0, 217, 255, 0.2)',
+              }}>
+                {[
+                  { icon: '📹', text: '실시간 분석' },
+                  { icon: '🎯', text: '자세 교정' },
+                  { icon: '💪', text: '부상 예방' },
+                ].map((feature, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      flex: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      padding: '10px 8px',
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      borderRadius: '10px',
+                    }}
+                  >
+                    <span style={{ fontSize: '16px' }}>{feature.icon}</span>
+                    <span style={{ fontSize: '12px', color: '#D1D5DB', fontWeight: 500 }}>{feature.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Quick Stats */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
           style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}
         >
           {[
@@ -342,138 +662,405 @@ export default function HomePage() {
           ))}
         </motion.section>
 
-        {/* AI Routine Card - Featured */}
+        {/* AI Routine Cards - Horizontal Scroll */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <FeatureCard>
-            {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '20px' }}>
+          {/* Section Header */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: '16px',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{
-                width: '50px',
-                height: '50px',
-                borderRadius: '16px',
+                width: '36px',
+                height: '36px',
+                borderRadius: '10px',
                 background: 'linear-gradient(135deg, #00D9FF, #7209B7)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 4px 15px rgba(0, 217, 255, 0.4)',
+                boxShadow: '0 4px 15px rgba(0, 217, 255, 0.3)',
               }}>
-                <Sparkles size={24} color="white" />
+                <Sparkles size={18} color="white" />
               </div>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <h3 style={{ fontSize: '17px', fontWeight: 'bold', color: 'white', margin: 0 }}>
-                    오늘의 AI 루틴
-                  </h3>
-                  <Tag color="blue">추천</Tag>
-                </div>
-                <p style={{ fontSize: '13px', color: '#9CA3AF', margin: '4px 0 0' }}>
-                  {todayRoutine.exercises.length}개 운동 · {todayRoutine.duration}분
-                </p>
-              </div>
+              <span style={{ fontSize: '17px', fontWeight: 'bold', color: 'white' }}>
+                오늘의 AI 루틴
+              </span>
             </div>
-
-            {/* Exercise Tags */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '20px' }}>
-              {todayRoutine.exercises.slice(0, 4).map((exercise, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.3 + i * 0.1 }}
-                  style={{
-                    padding: '10px 14px',
-                    background: 'rgba(255, 255, 255, 0.06)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '12px',
-                    fontSize: '13px',
-                    color: '#E5E7EB',
-                  }}
-                >
-                  {exercise.nameKo}
-                </motion.div>
-              ))}
-              {todayRoutine.exercises.length > 4 && (
-                <div style={{
-                  padding: '10px 14px',
-                  background: 'rgba(255, 255, 255, 0.06)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '12px',
-                  fontSize: '13px',
-                  color: '#9CA3AF',
-                }}>
-                  +{todayRoutine.exercises.length - 4}
-                </div>
-              )}
-            </div>
-
-            {/* CTA Button */}
-            <motion.button
-              onClick={() => router.push('/routine/today')}
+            <button
+              onClick={() => router.push('/routine')}
               style={{
-                width: '100%',
-                padding: '16px',
-                borderRadius: '16px',
-                background: 'linear-gradient(135deg, #FF6B35, #FF006E)',
-                border: 'none',
-                color: 'white',
-                fontWeight: 'bold',
-                fontSize: '15px',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
+                gap: '4px',
+                fontSize: '13px',
+                color: '#00D9FF',
+                background: 'none',
+                border: 'none',
                 cursor: 'pointer',
-                boxShadow: '0 4px 20px rgba(255, 107, 53, 0.4)',
               }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
             >
-              <Zap size={20} />
-              루틴 시작하기
-            </motion.button>
-          </FeatureCard>
+              전체보기 <ChevronRight size={16} />
+            </button>
+          </div>
+
+          {/* Horizontal Scroll Cards */}
+          <div style={{
+            display: 'flex',
+            gap: '14px',
+            overflowX: 'auto',
+            paddingBottom: '8px',
+            marginLeft: '-20px',
+            marginRight: '-20px',
+            paddingLeft: '20px',
+            paddingRight: '20px',
+            scrollSnapType: 'x mandatory',
+            WebkitOverflowScrolling: 'touch',
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none',
+          }}>
+            {AI_RECOMMENDED_ROUTINES.slice(0, 7).map((routine, index) => {
+              const colors = [
+                { gradient: 'linear-gradient(135deg, #FF6B35, #FF006E)', shadow: 'rgba(255, 107, 53, 0.3)' },
+                { gradient: 'linear-gradient(135deg, #00D9FF, #7209B7)', shadow: 'rgba(0, 217, 255, 0.3)' },
+                { gradient: 'linear-gradient(135deg, #39FF14, #00D9FF)', shadow: 'rgba(57, 255, 20, 0.3)' },
+                { gradient: 'linear-gradient(135deg, #7209B7, #FF006E)', shadow: 'rgba(114, 9, 183, 0.3)' },
+                { gradient: 'linear-gradient(135deg, #FFD60A, #FF6B35)', shadow: 'rgba(255, 214, 10, 0.3)' },
+                { gradient: 'linear-gradient(135deg, #FF006E, #7209B7)', shadow: 'rgba(255, 0, 110, 0.3)' },
+                { gradient: 'linear-gradient(135deg, #00D9FF, #39FF14)', shadow: 'rgba(0, 217, 255, 0.3)' },
+              ];
+              const colorScheme = colors[index % colors.length];
+              const difficultyLabels = ['', '입문', '초급', '중급', '고급', '전문가'];
+
+              return (
+                <motion.div
+                  key={routine.id}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 + index * 0.08 }}
+                  onClick={() => router.push(`/routine/${routine.id}`)}
+                  style={{
+                    minWidth: '260px',
+                    maxWidth: '260px',
+                    flexShrink: 0,
+                    scrollSnapAlign: 'start',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div style={{
+                    position: 'relative',
+                    borderRadius: '20px',
+                    padding: '2px',
+                    background: colorScheme.gradient,
+                  }}>
+                    <div style={{
+                      background: 'linear-gradient(145deg, #1A1A24, #0D0D12)',
+                      borderRadius: '18px',
+                      padding: '18px',
+                      position: 'relative',
+                      overflow: 'hidden',
+                    }}>
+                      {/* Glow Effect */}
+                      <div style={{
+                        position: 'absolute',
+                        top: '-20px',
+                        right: '-20px',
+                        width: '80px',
+                        height: '80px',
+                        background: `radial-gradient(circle, ${colorScheme.shadow} 0%, transparent 70%)`,
+                        borderRadius: '50%',
+                        filter: 'blur(20px)',
+                      }} />
+
+                      {/* Card Content */}
+                      <div style={{ position: 'relative', zIndex: 10 }}>
+                        {/* Title & Tag */}
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '12px' }}>
+                          <h4 style={{
+                            fontSize: '15px',
+                            fontWeight: 'bold',
+                            color: 'white',
+                            margin: 0,
+                            lineHeight: 1.3,
+                          }}>
+                            {routine.name}
+                          </h4>
+                          <span style={{
+                            padding: '4px 8px',
+                            borderRadius: '8px',
+                            fontSize: '10px',
+                            fontWeight: 600,
+                            background: 'rgba(255, 255, 255, 0.1)',
+                            color: '#E5E7EB',
+                            whiteSpace: 'nowrap',
+                          }}>
+                            {difficultyLabels[routine.difficulty]}
+                          </span>
+                        </div>
+
+                        {/* Stats Row */}
+                        <div style={{
+                          display: 'flex',
+                          gap: '12px',
+                          marginBottom: '14px',
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <Zap size={14} color="#FFD60A" />
+                            <span style={{ fontSize: '12px', color: '#9CA3AF' }}>
+                              {routine.duration}분
+                            </span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <Flame size={14} color="#FF6B35" />
+                            <span style={{ fontSize: '12px', color: '#9CA3AF' }}>
+                              {routine.calories}kcal
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Exercise Preview */}
+                        <div style={{
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          gap: '6px',
+                          marginBottom: '14px',
+                        }}>
+                          {routine.exercises.slice(0, 3).map((ex, i) => (
+                            <span
+                              key={i}
+                              style={{
+                                padding: '5px 10px',
+                                background: 'rgba(255, 255, 255, 0.06)',
+                                border: '1px solid rgba(255, 255, 255, 0.08)',
+                                borderRadius: '8px',
+                                fontSize: '11px',
+                                color: '#D1D5DB',
+                              }}
+                            >
+                              {ex.nameKo}
+                            </span>
+                          ))}
+                          {routine.exercises.length > 3 && (
+                            <span style={{
+                              padding: '5px 10px',
+                              background: 'rgba(255, 255, 255, 0.06)',
+                              border: '1px solid rgba(255, 255, 255, 0.08)',
+                              borderRadius: '8px',
+                              fontSize: '11px',
+                              color: '#6B7280',
+                            }}>
+                              +{routine.exercises.length - 3}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* CTA Button */}
+                        <button
+                          style={{
+                            width: '100%',
+                            padding: '12px',
+                            borderRadius: '12px',
+                            background: colorScheme.gradient,
+                            border: 'none',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            fontSize: '13px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '6px',
+                            cursor: 'pointer',
+                            boxShadow: `0 4px 15px ${colorScheme.shadow}`,
+                          }}
+                        >
+                          <Zap size={16} />
+                          시작하기
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
         </motion.section>
 
-        {/* PT Session Card */}
-        {member.membershipType !== 'basic' && (
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <PremiumCard onClick={() => router.push('/pt')}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                  <div style={{
-                    width: '48px',
-                    height: '48px',
-                    borderRadius: '14px',
-                    background: 'linear-gradient(135deg, #7209B7, #FF006E)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                    <Star size={24} color="white" />
-                  </div>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <h3 style={{ fontWeight: 'bold', color: 'white', margin: 0, fontSize: '15px' }}>PT 세션</h3>
-                      <Tag color="pink">4회 남음</Tag>
+        {/* PT 예약 바로가기 배너 */}
+        {/* 조건: PT 멤버십이 있고 (다음 예약이 없거나 잔여 회차가 있을 때) 노출 */}
+        {(() => {
+          const hasPT = hasPTMembership(member.id);
+          const remainingSessions = getPTRemainingSessions(member.id);
+          const nextSession = getNextPTSession(member.id);
+          const trainer = MOCK_TRAINERS.find(t => t.id === MOCK_PT_MEMBERSHIP.trainerId);
+
+          // PT 멤버십이 있고, (다음 예약이 없거나 잔여 회차가 있을 때) 노출
+          const shouldShowBanner = hasPT && (remainingSessions > 0 || !nextSession);
+
+          if (!shouldShowBanner) return null;
+
+          // 배너 클릭 로그 함수
+          const handlePTBannerClick = () => {
+            // 클릭 로그 기록
+            console.log('[PT Banner Click Log]', {
+              memberId: member.id,
+              remainingSessions,
+              hasNextBooking: !!nextSession,
+              timestamp: new Date().toISOString(),
+            });
+            // PT 예약 화면으로 바로 이동
+            router.push('/pt/booking');
+          };
+
+          return (
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <div
+                onClick={handlePTBannerClick}
+                style={{
+                  position: 'relative',
+                  borderRadius: '20px',
+                  padding: '2px',
+                  background: 'linear-gradient(135deg, #7209B7, #FF006E)',
+                  cursor: 'pointer',
+                  overflow: 'hidden',
+                }}
+              >
+                {/* Shine effect */}
+                <motion.div
+                  animate={{ x: ['-100%', '200%'] }}
+                  transition={{ duration: 3, repeat: Infinity, repeatDelay: 3 }}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '50%',
+                    height: '100%',
+                    background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent)',
+                    zIndex: 10,
+                  }}
+                />
+
+                <div style={{
+                  background: 'linear-gradient(145deg, rgba(114, 9, 183, 0.15), #0D0D12)',
+                  borderRadius: '18px',
+                  padding: '20px',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    {/* PT Icon */}
+                    <div style={{
+                      width: '56px',
+                      height: '56px',
+                      borderRadius: '16px',
+                      background: 'linear-gradient(135deg, #7209B7, #FF006E)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 4px 20px rgba(114, 9, 183, 0.4)',
+                      flexShrink: 0,
+                    }}>
+                      <Star size={28} color="white" />
                     </div>
-                    <p style={{ fontSize: '13px', color: '#9CA3AF', margin: '4px 0 0' }}>
-                      다음 예약을 잡아보세요
-                    </p>
+
+                    <div style={{ flex: 1 }}>
+                      {/* Title Row */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+                        <h3 style={{ fontSize: '17px', fontWeight: 'bold', color: 'white', margin: 0 }}>
+                          PT 예약하기
+                        </h3>
+                        <span style={{
+                          padding: '4px 10px',
+                          borderRadius: '12px',
+                          background: 'rgba(255, 0, 110, 0.2)',
+                          color: '#FF006E',
+                          fontSize: '12px',
+                          fontWeight: 'bold',
+                        }}>
+                          {remainingSessions}회 남음
+                        </span>
+                      </div>
+
+                      {/* Subtitle */}
+                      <p style={{ fontSize: '13px', color: '#9CA3AF', margin: 0, lineHeight: 1.4 }}>
+                        {nextSession
+                          ? `다음 예약: ${nextSession.date} ${nextSession.startTime}`
+                          : trainer
+                            ? `${trainer.name} 트레이너와 다음 세션을 예약하세요`
+                            : '지금 바로 PT 세션을 예약해보세요'
+                        }
+                      </p>
+                    </div>
+
+                    <ChevronRight size={24} color="#FF006E" />
+                  </div>
+
+                  {/* Info Tags */}
+                  <div style={{
+                    display: 'flex',
+                    gap: '8px',
+                    marginTop: '14px',
+                    paddingTop: '14px',
+                    borderTop: '1px solid rgba(114, 9, 183, 0.3)',
+                  }}>
+                    <div style={{
+                      flex: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      padding: '10px 8px',
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      borderRadius: '10px',
+                    }}>
+                      <Calendar size={14} color="#7209B7" />
+                      <span style={{ fontSize: '12px', color: '#D1D5DB', fontWeight: 500 }}>
+                        {MOCK_PT_MEMBERSHIP.usedSessions}/{MOCK_PT_MEMBERSHIP.totalSessions} 진행
+                      </span>
+                    </div>
+                    <div style={{
+                      flex: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      padding: '10px 8px',
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      borderRadius: '10px',
+                    }}>
+                      <Clock size={14} color="#FF006E" />
+                      <span style={{ fontSize: '12px', color: '#D1D5DB', fontWeight: 500 }}>
+                        60분 세션
+                      </span>
+                    </div>
+                    {trainer && (
+                      <div style={{
+                        flex: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                        padding: '10px 8px',
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        borderRadius: '10px',
+                      }}>
+                        <span style={{ fontSize: '12px', color: '#D1D5DB', fontWeight: 500 }}>
+                          ⭐ {trainer.rating}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
-                <ChevronRight size={20} color="#6B7280" />
               </div>
-            </PremiumCard>
-          </motion.section>
-        )}
+            </motion.section>
+          );
+        })()}
 
         {/* GX Classes */}
         <motion.section

@@ -189,7 +189,7 @@ export default function BadgesPage() {
 
   return (
     <div className="min-h-screen bg-cyber-dark pb-20">
-      <Header title="뱃지 컬렉션" showBack={true} showNotification={false} />
+      <Header title="뱃지 컬렉션" showBack={true} showLogo={true} showNotification={false} />
 
       <div className="p-4 space-y-6">
         {/* 통계 */}
@@ -371,7 +371,7 @@ export default function BadgesPage() {
                     ? 'premium'
                     : selectedBadge.rarity === 'rare'
                     ? 'growth'
-                    : 'status'
+                    : 'info'
                 }
               >
                 {RARITY_CONFIG[selectedBadge.rarity as keyof typeof RARITY_CONFIG].label}

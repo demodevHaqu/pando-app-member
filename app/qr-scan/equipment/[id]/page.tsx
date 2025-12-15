@@ -3,7 +3,7 @@
 import React, { useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Play, TrendingUp, ChevronRight } from 'lucide-react';
+import { Play, TrendingUp, ChevronRight, Camera, Sparkles } from 'lucide-react';
 import { MOCK_EQUIPMENT } from '@/data/mock/equipment';
 import { MOCK_EXERCISES } from '@/data/mock/exercises';
 import {
@@ -92,10 +92,91 @@ export default function EquipmentDetailPage({ params }: PageProps) {
               </span>
             </div>
 
-            <PrimaryButton fullWidth size="lg" onClick={() => router.push('/routine')}>
-              루틴에 추가하기
-            </PrimaryButton>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <PrimaryButton fullWidth size="lg" onClick={() => router.push('/routine')}>
+                루틴에 추가하기
+              </PrimaryButton>
+
+              {/* AI 자세 검증 버튼 - 눈에 띄게 */}
+              <motion.button
+                onClick={() => router.push(`/qr-scan/equipment/${resolvedParams.id}/form-guide`)}
+                style={{
+                  width: '100%',
+                  padding: '16px',
+                  borderRadius: '16px',
+                  background: 'linear-gradient(135deg, rgba(57, 255, 20, 0.15), rgba(0, 217, 255, 0.1))',
+                  border: '2px solid rgba(57, 255, 20, 0.5)',
+                  color: '#39FF14',
+                  fontWeight: 'bold',
+                  fontSize: '15px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 20px rgba(57, 255, 20, 0.2), inset 0 0 20px rgba(57, 255, 20, 0.05)',
+                }}
+                whileHover={{ scale: 1.02, boxShadow: '0 6px 25px rgba(57, 255, 20, 0.3)' }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Camera size={20} />
+                AI 자세 검증 시작하기
+                <Sparkles size={18} />
+              </motion.button>
+            </div>
           </FeatureCard>
+        </motion.section>
+
+        {/* AI 자세 검증 안내 카드 */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+        >
+          <ModernCard
+            onClick={() => router.push(`/qr-scan/equipment/${resolvedParams.id}/form-guide`)}
+            style={{
+              padding: '20px',
+              background: 'linear-gradient(145deg, rgba(57, 255, 20, 0.08), rgba(13, 13, 18, 0.98))',
+              border: '1px solid rgba(57, 255, 20, 0.2)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{
+                width: '56px',
+                height: '56px',
+                borderRadius: '16px',
+                background: 'linear-gradient(135deg, #39FF14, #00D9FF)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 15px rgba(57, 255, 20, 0.4)',
+              }}>
+                <Camera size={28} color="white" />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <h4 style={{ fontWeight: 'bold', color: 'white', margin: 0, fontSize: '16px' }}>
+                    AI 자세 검증
+                  </h4>
+                  <span style={{
+                    padding: '3px 8px',
+                    borderRadius: '10px',
+                    background: 'rgba(57, 255, 20, 0.2)',
+                    color: '#39FF14',
+                    fontSize: '10px',
+                    fontWeight: 'bold',
+                  }}>
+                    NEW
+                  </span>
+                </div>
+                <p style={{ fontSize: '13px', color: '#9CA3AF', margin: 0, lineHeight: 1.4 }}>
+                  카메라로 실시간 자세를 분석하고 즉각적인 피드백을 받으세요
+                </p>
+              </div>
+              <ChevronRight size={20} color="#39FF14" />
+            </div>
+          </ModernCard>
         </motion.section>
 
         {/* Tabs */}

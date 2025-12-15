@@ -127,7 +127,7 @@ export default function UGCFeedbackPage() {
 
   return (
     <div className="min-h-screen bg-cyber-dark pb-24">
-      <Header title="AI 피드백" showBack={true} showNotification={false} />
+      <Header title="AI 피드백" showBack={true} showLogo={true} showNotification={false} />
 
       <div className="p-4 space-y-6">
         {/* 비디오 플레이어 */}
@@ -284,7 +284,7 @@ export default function UGCFeedbackPage() {
                                 item.priority === 'high'
                                   ? 'energy'
                                   : item.priority === 'medium'
-                                  ? 'status'
+                                  ? 'warning'
                                   : 'growth'
                               }
                             >

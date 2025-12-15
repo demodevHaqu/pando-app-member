@@ -46,7 +46,7 @@ export default function StretchingPage() {
 
   return (
     <div className="min-h-screen bg-cyber-dark">
-      <Header title="스트레칭 존" showBack={true} />
+      <Header title="스트레칭 존" showBack={true} showLogo={true} />
 
       <div className="px-4 sm:px-6 lg:px-8 py-4 space-y-6 pb-20 max-w-2xl mx-auto">
         {/* AI Recommendations */}

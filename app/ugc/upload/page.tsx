@@ -111,7 +111,7 @@ export default function UGCUploadPage() {
 
   return (
     <div className="min-h-screen bg-cyber-dark pb-24">
-      <Header title="영상 업로드" showBack={true} showNotification={false} />
+      <Header title="영상 업로드" showBack={true} showLogo={true} showNotification={false} />
 
       <div className="p-4 space-y-6">
         {/* 업로드 영역 */}
@@ -133,8 +133,8 @@ export default function UGCUploadPage() {
                   AI 피드백을 받아보세요
                 </p>
                 <div className="flex justify-center gap-3">
-                  <Badge type="status">MP4, MOV</Badge>
-                  <Badge type="status">최대 100MB</Badge>
+                  <Badge type="info">MP4, MOV</Badge>
+                  <Badge type="info">최대 100MB</Badge>
                 </div>
               </div>
             </Card>

@@ -9,7 +9,7 @@ export interface GXClass {
   capacity: number;
   enrolled: number;
   waitlist: number;
-  type: 'yoga' | 'pilates' | 'spinning' | 'zumba' | 'crossfit' | 'boxing';
+  type: 'yoga' | 'pilates' | 'spinning' | 'zumba' | 'crossfit' | 'boxing' | 'aerobic';
   level: 'beginner' | 'intermediate' | 'advanced';
   location: string;
   description: string;

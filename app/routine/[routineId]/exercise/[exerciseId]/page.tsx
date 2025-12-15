@@ -3,8 +3,9 @@
 import React, { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, CheckCircle2, ChevronRight, Clock, Zap } from 'lucide-react';
+import { Play, Pause, CheckCircle2, ChevronRight, Clock, Zap, Youtube } from 'lucide-react';
 import { MOCK_ROUTINES } from '@/data/mock/routines';
+import YouTubeVideoPlayer from '@/components/exercise/YouTubeVideoPlayer';
 import {
   ModernCard,
   FeatureCard,
@@ -159,24 +160,24 @@ export default function ExerciseExecutionPage({ params }: PageProps) {
         {/* Exercise Info */}
         {!isResting && (
           <>
+            {/* YouTube Video */}
             <motion.section
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <ModernCard style={{ padding: '20px' }}>
-                <div style={{
-                  aspectRatio: '16/9',
-                  background: 'rgba(0, 0, 0, 0.4)',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: '20px',
-                }}>
-                  <Play size={64} color="#00D9FF" />
-                </div>
+              <YouTubeVideoPlayer
+                exerciseName={exercise.nameKo}
+                exerciseNameEn={exercise.name}
+              />
+            </motion.section>
 
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+            >
+              <ModernCard style={{ padding: '20px' }}>
                 <h2 style={{ fontSize: '22px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
                   {exercise.nameKo}
                 </h2>

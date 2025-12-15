@@ -3,21 +3,25 @@
 import React from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import Header from '@/components/layout/Header';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
-import Badge from '@/components/ui/Badge';
 import {
   Bell,
   Calendar,
   Clock,
   Gift,
   AlertCircle,
-  CheckCircle,
   ArrowRight,
   Trash2,
   BellOff,
+  ArrowLeft,
 } from 'lucide-react';
+import {
+  ModernCard,
+  FeatureCard,
+  PageHeader,
+  PrimaryButton,
+  SecondaryButton,
+  Tag,
+} from '@/components/ui/ModernUI';
 
 // Mock 알림 상세 데이터
 const MOCK_NOTIFICATIONS: Record<
@@ -161,32 +165,37 @@ const MOCK_NOTIFICATIONS: Record<
 };
 
 const getNotificationIcon = (type: string) => {
+  const iconStyle = { flexShrink: 0 };
   switch (type) {
     case 'reservation':
-      return <Calendar size={24} className="text-electric-blue" />;
+      return <Calendar size={24} color="#00D9FF" style={iconStyle} />;
     case 'reward':
-      return <Gift size={24} className="text-cyber-yellow" />;
+      return <Gift size={24} color="#FFD60A" style={iconStyle} />;
     case 'event':
-      return <Clock size={24} className="text-energy-orange" />;
+      return <Clock size={24} color="#FF6B35" style={iconStyle} />;
     case 'promotion':
-      return <Bell size={24} className="text-power-pink" />;
+      return <Bell size={24} color="#FF006E" style={iconStyle} />;
     case 'system':
-      return <AlertCircle size={24} className="text-tech-purple" />;
+      return <AlertCircle size={24} color="#7209B7" style={iconStyle} />;
     default:
-      return <Bell size={24} className="text-gray-400" />;
+      return <Bell size={24} color="#6B7280" style={iconStyle} />;
   }
 };
 
-const getNotificationBadgeType = (type: string): 'energy' | 'growth' | 'premium' | 'status' => {
+const getNotificationTagColor = (type: string): 'green' | 'orange' | 'pink' | 'blue' | 'purple' => {
   switch (type) {
     case 'reservation':
-      return 'growth';
+      return 'blue';
     case 'reward':
-      return 'energy';
+      return 'orange';
+    case 'event':
+      return 'green';
     case 'promotion':
-      return 'premium';
+      return 'pink';
+    case 'system':
+      return 'purple';
     default:
-      return 'status';
+      return 'blue';
   }
 };
 
@@ -216,13 +225,19 @@ export default function NotificationDetailPage() {
 
   if (!notification) {
     return (
-      <div className="min-h-screen bg-cyber-dark flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-6xl mb-4">🔔</div>
-          <p className="text-white mb-4">알림을 찾을 수 없습니다</p>
-          <Button variant="ghost" onClick={() => router.push('/notifications')}>
+      <div style={{
+        minHeight: '100vh',
+        background: '#0D0D12',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '60px', marginBottom: '16px' }}>🔔</div>
+          <p style={{ color: 'white', marginBottom: '16px' }}>알림을 찾을 수 없습니다</p>
+          <SecondaryButton onClick={() => router.push('/notifications')}>
             알림 목록으로
-          </Button>
+          </SecondaryButton>
         </div>
       </div>
     );
@@ -250,36 +265,63 @@ export default function NotificationDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-cyber-dark pb-24">
-      <Header title="알림 상세" showBack={true} showNotification={false} />
+    <div style={{ minHeight: '100vh', background: '#0D0D12', paddingBottom: '140px' }}>
+      <PageHeader title="알림 상세" />
 
-      <div className="p-4 space-y-6">
+      <div style={{ padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {/* 알림 헤더 */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <Card variant="hologram">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl glass flex items-center justify-center flex-shrink-0">
+          <FeatureCard>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+              <div style={{
+                width: '52px',
+                height: '52px',
+                borderRadius: '14px',
+                background: 'rgba(255, 255, 255, 0.05)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}>
                 {getNotificationIcon(notification.type)}
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <Badge type={getNotificationBadgeType(notification.type)}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                  <Tag color={getNotificationTagColor(notification.type)}>
                     {getNotificationTypeLabel(notification.type)}
-                  </Badge>
+                  </Tag>
                   {!notification.isRead && (
-                    <span className="w-2 h-2 bg-power-pink rounded-full" />
+                    <span style={{
+                      width: '8px',
+                      height: '8px',
+                      background: '#FF006E',
+                      borderRadius: '50%',
+                    }} />
                   )}
                 </div>
-                <h1 className="text-xl font-bold text-white mb-2">{notification.title}</h1>
-                <p className="text-gray-400 text-sm">{notification.message}</p>
+                <h1 style={{ fontSize: '20px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+                  {notification.title}
+                </h1>
+                <p style={{ color: '#9CA3AF', fontSize: '14px' }}>
+                  {notification.message}
+                </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 mt-4 pt-4 border-t border-white/10 text-sm text-gray-500">
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginTop: '16px',
+              paddingTop: '16px',
+              borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+              fontSize: '13px',
+              color: '#6B7280',
+            }}>
               <Clock size={14} />
               <span>{formatTimestamp(notification.timestamp)}</span>
             </div>
-          </Card>
+          </FeatureCard>
         </motion.div>
 
         {/* 이미지 (있는 경우) */}
@@ -289,11 +331,18 @@ export default function NotificationDetailPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <div className="rounded-xl overflow-hidden">
+            <div style={{
+              borderRadius: '16px',
+              overflow: 'hidden',
+            }}>
               <img
                 src={notification.image}
                 alt={notification.title}
-                className="w-full h-48 object-cover"
+                style={{
+                  width: '100%',
+                  height: '180px',
+                  objectFit: 'cover',
+                }}
               />
             </div>
           </motion.div>
@@ -305,12 +354,17 @@ export default function NotificationDetailPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Card>
-            <h3 className="font-bold text-white mb-4">상세 내용</h3>
-            <div className="text-gray-300 text-sm whitespace-pre-wrap leading-relaxed">
+          <ModernCard style={{ padding: '20px' }}>
+            <h3 style={{ fontWeight: 'bold', color: 'white', marginBottom: '16px' }}>상세 내용</h3>
+            <div style={{
+              color: '#D1D5DB',
+              fontSize: '14px',
+              whiteSpace: 'pre-wrap',
+              lineHeight: 1.7,
+            }}>
               {notification.detail}
             </div>
-          </Card>
+          </ModernCard>
         </motion.div>
 
         {/* 액션 버튼들 */}
@@ -318,33 +372,39 @@ export default function NotificationDetailPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="flex gap-3"
+          style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}
         >
-          <Button variant="ghost" size="lg" className="flex-1" onClick={handleDelete}>
-            <Trash2 size={18} className="mr-2" />
+          <SecondaryButton size="lg" onClick={handleDelete} fullWidth>
+            <Trash2 size={18} style={{ marginRight: '8px' }} />
             삭제
-          </Button>
-          <Button variant="ghost" size="lg" className="flex-1" onClick={handleMute}>
-            <BellOff size={18} className="mr-2" />
+          </SecondaryButton>
+          <SecondaryButton size="lg" onClick={handleMute} fullWidth>
+            <BellOff size={18} style={{ marginRight: '8px' }} />
             음소거
-          </Button>
+          </SecondaryButton>
         </motion.div>
       </div>
 
       {/* 하단 고정 버튼 */}
       {notification.actionUrl && (
-        <div className="fixed bottom-16 left-0 right-0 max-w-[425px] mx-auto p-4 bg-gradient-to-t from-cyber-dark via-cyber-dark to-transparent">
-          <Button
-            variant="energy"
+        <div style={{
+          position: 'fixed',
+          bottom: '80px',
+          left: 0,
+          right: 0,
+          maxWidth: '425px',
+          margin: '0 auto',
+          padding: '16px 20px',
+          background: 'linear-gradient(to top, #0D0D12 60%, transparent)',
+        }}>
+          <PrimaryButton
+            fullWidth
             size="lg"
-            className="w-full"
             onClick={() => router.push(notification.actionUrl!)}
-            glow
-            shine
+            icon={<ArrowRight size={20} />}
           >
             {notification.actionLabel || '바로가기'}
-            <ArrowRight size={20} className="ml-2" />
-          </Button>
+          </PrimaryButton>
         </div>
       )}
     </div>

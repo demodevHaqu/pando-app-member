@@ -19,8 +19,354 @@ export const MOCK_INSTRUCTORS: Instructor[] = [
     rating: 4.7,
     bio: '체육교육과 출신. 고강도 운동 전문가입니다.',
   },
+  {
+    id: 'instructor3',
+    name: '김서연',
+    profileImage: 'https://i.pravatar.cc/150?img=9',
+    specialty: ['에어로빅', '댄스'],
+    experience: 6,
+    rating: 4.8,
+    bio: '댄스 전공 출신. 즐거운 운동을 추구합니다.',
+  },
+  {
+    id: 'instructor4',
+    name: '최준혁',
+    profileImage: 'https://i.pravatar.cc/150?img=11',
+    specialty: ['크로스핏', 'HIIT'],
+    experience: 4,
+    rating: 4.6,
+    bio: '체력 관리 전문가. 효율적인 운동법을 제시합니다.',
+  },
 ];
 
+// 오늘 날짜 기준으로 데이터 생성
+const getDateString = (daysFromNow: number) => {
+  const date = new Date();
+  date.setDate(date.getDate() + daysFromNow);
+  return date.toISOString().split('T')[0];
+};
+
+// 오늘의 클래스 (일간용)
+export const TODAY_GX_CLASSES: GXClass[] = [
+  {
+    id: 'gx-today-1',
+    name: '모닝 요가',
+    instructor: MOCK_INSTRUCTORS[0],
+    date: getDateString(0),
+    startTime: '07:00',
+    endTime: '08:00',
+    duration: 60,
+    capacity: 15,
+    enrolled: 8,
+    waitlist: 0,
+    type: 'yoga',
+    level: 'beginner',
+    location: 'GX룸 A',
+    description: '상쾌한 아침을 여는 모닝 요가',
+    imageUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
+  },
+  {
+    id: 'gx-today-2',
+    name: '파워 스피닝',
+    instructor: MOCK_INSTRUCTORS[1],
+    date: getDateString(0),
+    startTime: '09:30',
+    endTime: '10:15',
+    duration: 45,
+    capacity: 20,
+    enrolled: 12,
+    waitlist: 0,
+    type: 'spinning',
+    level: 'intermediate',
+    location: '스피닝룸',
+    description: '고강도 인터벌 사이클링',
+    imageUrl: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400',
+  },
+  {
+    id: 'gx-today-3',
+    name: '점심 필라테스',
+    instructor: MOCK_INSTRUCTORS[0],
+    date: getDateString(0),
+    startTime: '12:00',
+    endTime: '13:00',
+    duration: 60,
+    capacity: 15,
+    enrolled: 10,
+    waitlist: 0,
+    type: 'pilates',
+    level: 'beginner',
+    location: 'GX룸 B',
+    description: '점심시간 코어 강화 필라테스',
+    imageUrl: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400',
+  },
+  {
+    id: 'gx-today-4',
+    name: '에어로빅 댄스',
+    instructor: MOCK_INSTRUCTORS[2],
+    date: getDateString(0),
+    startTime: '14:00',
+    endTime: '15:00',
+    duration: 60,
+    capacity: 25,
+    enrolled: 18,
+    waitlist: 0,
+    type: 'aerobic',
+    level: 'beginner',
+    location: 'GX룸 A',
+    description: '신나는 음악과 함께하는 에어로빅',
+    imageUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400',
+  },
+  {
+    id: 'gx-today-5',
+    name: 'HIIT 부트캠프',
+    instructor: MOCK_INSTRUCTORS[3],
+    date: getDateString(0),
+    startTime: '18:00',
+    endTime: '18:45',
+    duration: 45,
+    capacity: 20,
+    enrolled: 20,
+    waitlist: 3,
+    type: 'crossfit',
+    level: 'advanced',
+    location: '크로스핏존',
+    description: '고강도 인터벌 트레이닝',
+    imageUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400',
+  },
+  {
+    id: 'gx-today-6',
+    name: '저녁 요가',
+    instructor: MOCK_INSTRUCTORS[0],
+    date: getDateString(0),
+    startTime: '19:30',
+    endTime: '20:30',
+    duration: 60,
+    capacity: 15,
+    enrolled: 15,
+    waitlist: 2,
+    type: 'yoga',
+    level: 'intermediate',
+    location: 'GX룸 A',
+    description: '하루를 마무리하는 릴렉싱 요가',
+    imageUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
+  },
+];
+
+// 주간 클래스 (주간용 - 여러 날짜에 걸쳐)
+export const WEEKLY_GX_CLASSES: GXClass[] = [
+  // 내일
+  {
+    id: 'gx-week-1',
+    name: '파워 요가',
+    instructor: MOCK_INSTRUCTORS[0],
+    date: getDateString(1),
+    startTime: '08:00',
+    endTime: '09:00',
+    duration: 60,
+    capacity: 15,
+    enrolled: 5,
+    waitlist: 0,
+    type: 'yoga',
+    level: 'intermediate',
+    location: 'GX룸 A',
+    description: '활력 넘치는 파워 요가',
+    imageUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
+  },
+  {
+    id: 'gx-week-2',
+    name: '크로스핏 WOD',
+    instructor: MOCK_INSTRUCTORS[3],
+    date: getDateString(1),
+    startTime: '10:00',
+    endTime: '11:00',
+    duration: 60,
+    capacity: 15,
+    enrolled: 8,
+    waitlist: 0,
+    type: 'crossfit',
+    level: 'advanced',
+    location: '크로스핏존',
+    description: 'Workout of the Day',
+    imageUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400',
+  },
+  {
+    id: 'gx-week-3',
+    name: '줌바 댄스',
+    instructor: MOCK_INSTRUCTORS[2],
+    date: getDateString(1),
+    startTime: '19:00',
+    endTime: '20:00',
+    duration: 60,
+    capacity: 30,
+    enrolled: 22,
+    waitlist: 0,
+    type: 'aerobic',
+    level: 'beginner',
+    location: 'GX룸 A',
+    description: '라틴 리듬의 줌바 댄스',
+    imageUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400',
+  },
+  // 2일 후
+  {
+    id: 'gx-week-4',
+    name: '코어 필라테스',
+    instructor: MOCK_INSTRUCTORS[0],
+    date: getDateString(2),
+    startTime: '09:00',
+    endTime: '10:00',
+    duration: 60,
+    capacity: 15,
+    enrolled: 7,
+    waitlist: 0,
+    type: 'pilates',
+    level: 'intermediate',
+    location: 'GX룸 B',
+    description: '코어 집중 필라테스',
+    imageUrl: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400',
+  },
+  {
+    id: 'gx-week-5',
+    name: '스피닝 힐클라임',
+    instructor: MOCK_INSTRUCTORS[1],
+    date: getDateString(2),
+    startTime: '18:30',
+    endTime: '19:15',
+    duration: 45,
+    capacity: 20,
+    enrolled: 15,
+    waitlist: 0,
+    type: 'spinning',
+    level: 'advanced',
+    location: '스피닝룸',
+    description: '힐클라임 인터벌 스피닝',
+    imageUrl: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400',
+  },
+  // 3일 후
+  {
+    id: 'gx-week-6',
+    name: '빈야사 요가',
+    instructor: MOCK_INSTRUCTORS[0],
+    date: getDateString(3),
+    startTime: '07:00',
+    endTime: '08:00',
+    duration: 60,
+    capacity: 15,
+    enrolled: 3,
+    waitlist: 0,
+    type: 'yoga',
+    level: 'intermediate',
+    location: 'GX룸 A',
+    description: '호흡과 동작의 조화',
+    imageUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
+  },
+  {
+    id: 'gx-week-7',
+    name: '서킷 트레이닝',
+    instructor: MOCK_INSTRUCTORS[3],
+    date: getDateString(3),
+    startTime: '12:00',
+    endTime: '12:45',
+    duration: 45,
+    capacity: 20,
+    enrolled: 12,
+    waitlist: 0,
+    type: 'crossfit',
+    level: 'intermediate',
+    location: '크로스핏존',
+    description: '점심시간 서킷 트레이닝',
+    imageUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400',
+  },
+  // 4일 후
+  {
+    id: 'gx-week-8',
+    name: 'K-POP 댄스',
+    instructor: MOCK_INSTRUCTORS[2],
+    date: getDateString(4),
+    startTime: '14:00',
+    endTime: '15:00',
+    duration: 60,
+    capacity: 25,
+    enrolled: 20,
+    waitlist: 0,
+    type: 'aerobic',
+    level: 'beginner',
+    location: 'GX룸 A',
+    description: '인기 K-POP 안무 배우기',
+    imageUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400',
+  },
+  {
+    id: 'gx-week-9',
+    name: '리포머 필라테스',
+    instructor: MOCK_INSTRUCTORS[0],
+    date: getDateString(4),
+    startTime: '19:00',
+    endTime: '20:00',
+    duration: 60,
+    capacity: 10,
+    enrolled: 10,
+    waitlist: 4,
+    type: 'pilates',
+    level: 'advanced',
+    location: '필라테스룸',
+    description: '기구를 활용한 심화 필라테스',
+    imageUrl: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400',
+  },
+  // 5일 후
+  {
+    id: 'gx-week-10',
+    name: '주말 요가',
+    instructor: MOCK_INSTRUCTORS[0],
+    date: getDateString(5),
+    startTime: '10:00',
+    endTime: '11:30',
+    duration: 90,
+    capacity: 20,
+    enrolled: 6,
+    waitlist: 0,
+    type: 'yoga',
+    level: 'beginner',
+    location: 'GX룸 A',
+    description: '주말 특별 90분 요가',
+    imageUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
+  },
+  {
+    id: 'gx-week-11',
+    name: '토요 스피닝',
+    instructor: MOCK_INSTRUCTORS[1],
+    date: getDateString(5),
+    startTime: '14:00',
+    endTime: '15:00',
+    duration: 60,
+    capacity: 20,
+    enrolled: 18,
+    waitlist: 0,
+    type: 'spinning',
+    level: 'intermediate',
+    location: '스피닝룸',
+    description: '주말 스페셜 스피닝',
+    imageUrl: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400',
+  },
+  // 6일 후
+  {
+    id: 'gx-week-12',
+    name: '일요 힐링 요가',
+    instructor: MOCK_INSTRUCTORS[0],
+    date: getDateString(6),
+    startTime: '11:00',
+    endTime: '12:00',
+    duration: 60,
+    capacity: 15,
+    enrolled: 4,
+    waitlist: 0,
+    type: 'yoga',
+    level: 'beginner',
+    location: 'GX룸 A',
+    description: '일요일 힐링 요가',
+    imageUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
+  },
+];
+
+// 기존 MOCK_GX_CLASSES 유지 (호환성)
 export const MOCK_GX_CLASSES: GXClass[] = [
   {
     id: 'gx1',
@@ -74,3 +420,36 @@ export const MOCK_GX_CLASSES: GXClass[] = [
     imageUrl: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400',
   },
 ];
+
+// 날짜별 클래스 그룹화 함수
+export function getClassesByDate(classes: GXClass[]): Record<string, GXClass[]> {
+  return classes.reduce((acc, cls) => {
+    const date = cls.date;
+    if (!acc[date]) {
+      acc[date] = [];
+    }
+    acc[date].push(cls);
+    return acc;
+  }, {} as Record<string, GXClass[]>);
+}
+
+// 날짜 포맷 함수
+export function formatDateKo(dateString: string): string {
+  const date = new Date(dateString);
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  if (dateString === today.toISOString().split('T')[0]) {
+    return '오늘';
+  }
+  if (dateString === tomorrow.toISOString().split('T')[0]) {
+    return '내일';
+  }
+
+  return date.toLocaleDateString('ko-KR', {
+    month: 'long',
+    day: 'numeric',
+    weekday: 'short',
+  });
+}

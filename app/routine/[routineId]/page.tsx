@@ -136,7 +136,10 @@ export default function RoutineDetailPage({ params }: PageProps) {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 + index * 0.05 }}
                 >
-                  <ModernCard style={{ padding: '16px' }}>
+                  <ModernCard
+                    style={{ padding: '16px' }}
+                    onClick={() => router.push(`/exercise/${exercise.id}`)}
+                  >
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
                       <div style={{
                         width: '48px',
@@ -172,7 +175,10 @@ export default function RoutineDetailPage({ params }: PageProps) {
                         <Tag color={exDiffInfo.color} size="sm">난이도 {exercise.difficulty}</Tag>
                       </div>
 
-                      <ChevronRight size={20} color="#6B7280" style={{ flexShrink: 0 }} />
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+                        <ChevronRight size={20} color="#00D9FF" />
+                        <span style={{ fontSize: '10px', color: '#6B7280' }}>상세</span>
+                      </div>
                     </div>
                   </ModernCard>
                 </motion.div>

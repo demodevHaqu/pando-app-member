@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Header from '@/components/layout/Header';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
-import Badge from '@/components/ui/Badge';
 import {
   CheckCircle,
   Star,
@@ -34,7 +33,7 @@ const MOCK_CLASS_RESULT = {
   },
 };
 
-export default function GXCompletePage() {
+function GXCompleteContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const classId = searchParams.get('classId');
@@ -43,9 +42,11 @@ export default function GXCompletePage() {
   const [feedback, setFeedback] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showConfetti, setShowConfetti] = useState(true);
+  const [windowDimensions, setWindowDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     const timer = setTimeout(() => setShowConfetti(false), 3000);
+    setWindowDimensions({ width: window.innerWidth, height: window.innerHeight });
     return () => clearTimeout(timer);
   }, []);
 
@@ -97,21 +98,21 @@ export default function GXCompletePage() {
 
   return (
     <div className="min-h-screen bg-cyber-dark pb-24">
-      <Header title="클래스 완료" showBack={false} showNotification={false} />
+      <Header title="클래스 완료" showBack={false} showLogo={true} showNotification={false} />
 
       {/* 축하 애니메이션 */}
-      {showConfetti && (
+      {showConfetti && windowDimensions.width > 0 && (
         <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
           {Array.from({ length: 50 }).map((_, i) => (
             <motion.div
               key={i}
               initial={{
-                x: Math.random() * window.innerWidth,
+                x: Math.random() * windowDimensions.width,
                 y: -20,
                 rotate: 0,
               }}
               animate={{
-                y: window.innerHeight + 20,
+                y: windowDimensions.height + 20,
                 rotate: Math.random() * 360,
               }}
               transition={{
@@ -315,5 +316,13 @@ export default function GXCompletePage() {
         </Button>
       </div>
     </div>
+  );
+}
+
+export default function GXCompletePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-cyber-dark flex items-center justify-center"><p className="text-white">로딩 중...</p></div>}>
+      <GXCompleteContent />
+    </Suspense>
   );
 }

@@ -14,7 +14,7 @@ export interface Exercise {
   id: string;
   name: string;
   nameKo: string;
-  category: 'strength' | 'cardio' | 'flexibility' | 'core';
+  category: 'strength' | 'cardio' | 'flexibility' | 'core' | 'stretching';
   muscleGroups: string[];
   equipmentId?: string;
   equipmentName?: string;

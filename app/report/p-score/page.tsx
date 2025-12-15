@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
   ModernCard,
@@ -15,6 +16,7 @@ import { MOCK_PSCORE_REPORT } from '@/data/mock/reports';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 export default function PScoreDetailPage() {
+  const router = useRouter();
   const report = MOCK_PSCORE_REPORT;
 
   const chartData = Object.entries(report.categories).map(([key, value]) => {
@@ -342,7 +344,7 @@ export default function PScoreDetailPage() {
         >
           <PrimaryButton
             fullWidth
-            onClick={() => {}}
+            onClick={() => router.push('/routine')}
             icon={<Calendar size={20} />}
           >
             맞춤 운동 계획 받기

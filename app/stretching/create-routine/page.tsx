@@ -65,7 +65,7 @@ export default function CreateStretchingRoutinePage() {
 
   return (
     <div className="min-h-screen bg-cyber-dark pb-24">
-      <Header title="나만의 루틴 만들기" showBack={true} showNotification={false} />
+      <Header title="나만의 루틴 만들기" showBack={true} showLogo={true} showNotification={false} />
 
       <div className="p-4 space-y-6">
         {/* 루틴 이름 */}

@@ -82,7 +82,7 @@ export default function PostDetailPage() {
 
   return (
     <div className="min-h-screen bg-cyber-dark">
-      <Header title="게시글" showBack={true} />
+      <Header title="게시글" showBack={true} showLogo={true} />
 
       <div className="pb-32">
         {/* Post */}

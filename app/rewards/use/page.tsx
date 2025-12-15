@@ -3,23 +3,29 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import Header from '@/components/layout/Header';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
-import Badge from '@/components/ui/Badge';
-import Modal from '@/components/ui/Modal';
 import {
   Gift,
   Tag,
   Clock,
   CheckCircle,
   AlertCircle,
-  ChevronRight,
   Ticket,
   Coffee,
   ShoppingBag,
   Dumbbell,
 } from 'lucide-react';
+import {
+  ModernCard,
+  FeatureCard,
+  PageHeader,
+  SectionTitle,
+  PrimaryButton,
+  SecondaryButton,
+  Tag as UITag,
+  IconBox,
+  GradientIconBox,
+} from '@/components/ui/ModernUI';
+import Modal from '@/components/ui/Modal';
 
 // Mock 쿠폰 데이터
 const MOCK_AVAILABLE_COUPONS = [
@@ -32,8 +38,8 @@ const MOCK_AVAILABLE_COUPONS = [
     discountValue: 20,
     minAmount: 500000,
     expiryDate: '2025-02-28',
-    icon: <Dumbbell size={24} className="text-energy-orange" />,
-    bgGradient: 'from-energy-orange/20 to-power-pink/20',
+    icon: <Dumbbell size={24} color="#FF6B35" />,
+    bgGradient: 'linear-gradient(135deg, rgba(255,107,53,0.2), rgba(255,0,110,0.2))',
   },
   {
     id: 'coupon2',
@@ -44,8 +50,8 @@ const MOCK_AVAILABLE_COUPONS = [
     discountValue: 50000,
     minAmount: 300000,
     expiryDate: '2025-01-31',
-    icon: <Tag size={24} className="text-neon-green" />,
-    bgGradient: 'from-neon-green/20 to-electric-blue/20',
+    icon: <Tag size={24} color="#39FF14" />,
+    bgGradient: 'linear-gradient(135deg, rgba(57,255,20,0.2), rgba(0,217,255,0.2))',
   },
   {
     id: 'coupon3',
@@ -53,8 +59,8 @@ const MOCK_AVAILABLE_COUPONS = [
     title: 'GX 1회 무료',
     description: '원하는 GX 클래스 1회 무료 이용',
     expiryDate: '2025-03-15',
-    icon: <Ticket size={24} className="text-electric-blue" />,
-    bgGradient: 'from-electric-blue/20 to-tech-purple/20',
+    icon: <Ticket size={24} color="#00D9FF" />,
+    bgGradient: 'linear-gradient(135deg, rgba(0,217,255,0.2), rgba(114,9,183,0.2))',
   },
   {
     id: 'coupon4',
@@ -62,55 +68,19 @@ const MOCK_AVAILABLE_COUPONS = [
     title: '프로틴 음료 교환권',
     description: '프론트에서 프로틴 음료 1잔 교환',
     expiryDate: '2025-02-15',
-    icon: <Coffee size={24} className="text-cyber-yellow" />,
-    bgGradient: 'from-cyber-yellow/20 to-energy-orange/20',
+    icon: <Coffee size={24} color="#FFD60A" />,
+    bgGradient: 'linear-gradient(135deg, rgba(255,214,10,0.2), rgba(255,107,53,0.2))',
   },
 ];
 
 // Mock 포인트 상품
 const MOCK_POINT_ITEMS = [
-  {
-    id: 'item1',
-    name: '운동 장갑',
-    points: 5000,
-    image: '🧤',
-    category: '용품',
-  },
-  {
-    id: 'item2',
-    name: '쉐이커 보틀',
-    points: 3000,
-    image: '🥤',
-    category: '용품',
-  },
-  {
-    id: 'item3',
-    name: '프로틴 바 5개',
-    points: 2000,
-    image: '🍫',
-    category: '식품',
-  },
-  {
-    id: 'item4',
-    name: 'PT 1회 이용권',
-    points: 15000,
-    image: '💪',
-    category: '서비스',
-  },
-  {
-    id: 'item5',
-    name: '스포츠 타월',
-    points: 4000,
-    image: '🧺',
-    category: '용품',
-  },
-  {
-    id: 'item6',
-    name: 'GX 1회 이용권',
-    points: 8000,
-    image: '🧘',
-    category: '서비스',
-  },
+  { id: 'item1', name: '운동 장갑', points: 5000, image: '🧤', category: '용품' },
+  { id: 'item2', name: '쉐이커 보틀', points: 3000, image: '🥤', category: '용품' },
+  { id: 'item3', name: '프로틴 바 5개', points: 2000, image: '🍫', category: '식품' },
+  { id: 'item4', name: 'PT 1회 이용권', points: 15000, image: '💪', category: '서비스' },
+  { id: 'item5', name: '스포츠 타월', points: 4000, image: '🧺', category: '용품' },
+  { id: 'item6', name: 'GX 1회 이용권', points: 8000, image: '🧘', category: '서비스' },
 ];
 
 export default function RewardUsePage() {
@@ -161,68 +131,96 @@ export default function RewardUsePage() {
   };
 
   return (
-    <div className="min-h-screen bg-cyber-dark pb-20">
-      <Header title="리워드 사용" showBack={true} showNotification={false} />
+    <div style={{ minHeight: '100vh', background: '#0D0D12', paddingBottom: '100px' }}>
+      <PageHeader title="리워드 사용" showBack={true} />
 
-      <div className="p-4 space-y-6">
+      <div style={{ padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {/* 포인트 요약 */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <Card variant="hologram" glow>
-            <div className="flex items-center justify-between">
+        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <FeatureCard gradient="linear-gradient(135deg, #FF6B35, #7209B7, #FF006E)">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
-                <p className="text-sm text-gray-400 mb-1">사용 가능 포인트</p>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold text-gradient-energy">
+                <p style={{ fontSize: '13px', color: '#9CA3AF', margin: '0 0 8px' }}>사용 가능 포인트</p>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                  <span style={{
+                    fontSize: '36px',
+                    fontWeight: 'bold',
+                    background: 'linear-gradient(135deg, #FF6B35, #FF006E)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                  }}>
                     {userPoints.toLocaleString()}
                   </span>
-                  <span className="text-gray-400">P</span>
+                  <span style={{ color: '#9CA3AF', fontSize: '16px' }}>P</span>
                 </div>
               </div>
-              <div className="w-14 h-14 rounded-full bg-gradient-energy/20 flex items-center justify-center">
-                <Gift size={28} className="text-energy-orange" />
-              </div>
+              <GradientIconBox gradient="linear-gradient(135deg, #FF6B35, #FF006E)" size={56}>
+                <Gift size={28} color="white" />
+              </GradientIconBox>
             </div>
-          </Card>
-        </motion.div>
+          </FeatureCard>
+        </motion.section>
 
         {/* 탭 */}
-        <motion.div
+        <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <div className="flex gap-2">
+          <div style={{ display: 'flex', gap: '10px' }}>
             <button
               onClick={() => setActiveTab('coupon')}
-              className={`flex-1 py-3 rounded-xl font-bold transition-all ${
-                activeTab === 'coupon'
-                  ? 'bg-gradient-energy text-white'
-                  : 'bg-cyber-mid text-gray-400'
-              }`}
+              style={{
+                flex: 1,
+                padding: '14px',
+                borderRadius: '14px',
+                border: 'none',
+                fontWeight: 'bold',
+                fontSize: '15px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                transition: 'all 0.3s',
+                background: activeTab === 'coupon' ? 'linear-gradient(135deg, #FF6B35, #FF006E)' : '#1A1A24',
+                color: activeTab === 'coupon' ? 'white' : '#6B7280',
+              }}
             >
-              <Tag size={18} className="inline mr-2" />
+              <Tag size={18} />
               쿠폰 ({MOCK_AVAILABLE_COUPONS.length})
             </button>
             <button
               onClick={() => setActiveTab('point')}
-              className={`flex-1 py-3 rounded-xl font-bold transition-all ${
-                activeTab === 'point'
-                  ? 'bg-gradient-energy text-white'
-                  : 'bg-cyber-mid text-gray-400'
-              }`}
+              style={{
+                flex: 1,
+                padding: '14px',
+                borderRadius: '14px',
+                border: 'none',
+                fontWeight: 'bold',
+                fontSize: '15px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                transition: 'all 0.3s',
+                background: activeTab === 'point' ? 'linear-gradient(135deg, #FF6B35, #FF006E)' : '#1A1A24',
+                color: activeTab === 'point' ? 'white' : '#6B7280',
+              }}
             >
-              <ShoppingBag size={18} className="inline mr-2" />
+              <ShoppingBag size={18} />
               포인트샵
             </button>
           </div>
-        </motion.div>
+        </motion.section>
 
         {/* 쿠폰 탭 */}
         {activeTab === 'coupon' && (
-          <motion.div
+          <motion.section
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="space-y-3"
+            style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
           >
             {MOCK_AVAILABLE_COUPONS.map((coupon, idx) => {
               const daysRemaining = getDaysRemaining(coupon.expiryDate);
@@ -235,63 +233,78 @@ export default function RewardUsePage() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.05 }}
                 >
-                  <Card
-                    className={`relative overflow-hidden bg-gradient-to-r ${coupon.bgGradient}`}
+                  <ModernCard
+                    style={{
+                      padding: '16px',
+                      background: coupon.bgGradient,
+                      position: 'relative',
+                      overflow: 'hidden',
+                    }}
                   >
                     {/* 쿠폰 절취선 효과 */}
-                    <div className="absolute right-20 top-0 bottom-0 border-l-2 border-dashed border-white/20" />
+                    <div style={{
+                      position: 'absolute',
+                      right: '80px',
+                      top: 0,
+                      bottom: 0,
+                      borderLeft: '2px dashed rgba(255,255,255,0.2)',
+                    }} />
 
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl glass flex items-center justify-center">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                      <IconBox color="orange" size={48}>
                         {coupon.icon}
-                      </div>
+                      </IconBox>
 
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-white mb-1">{coupon.title}</h3>
-                        <p className="text-xs text-gray-400 mb-2">{coupon.description}</p>
-                        <div className="flex items-center gap-2">
-                          <Clock size={12} className={isExpiringSoon ? 'text-power-pink' : 'text-gray-500'} />
-                          <span className={`text-xs ${isExpiringSoon ? 'text-power-pink' : 'text-gray-500'}`}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <h3 style={{ fontWeight: 'bold', color: 'white', margin: '0 0 6px', fontSize: '15px' }}>
+                          {coupon.title}
+                        </h3>
+                        <p style={{ fontSize: '12px', color: '#9CA3AF', margin: '0 0 8px' }}>
+                          {coupon.description}
+                        </p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <Clock size={12} color={isExpiringSoon ? '#FF006E' : '#6B7280'} />
+                          <span style={{
+                            fontSize: '12px',
+                            color: isExpiringSoon ? '#FF006E' : '#6B7280',
+                          }}>
                             {daysRemaining}일 남음
                           </span>
                           {isExpiringSoon && (
-                            <Badge type="energy">곧 만료</Badge>
+                            <UITag color="pink" size="sm">곧 만료</UITag>
                           )}
                         </div>
                       </div>
 
-                      <Button
-                        variant="energy"
-                        size="sm"
-                        onClick={() => handleUseCoupon(coupon.id)}
-                      >
+                      <PrimaryButton size="sm" onClick={() => handleUseCoupon(coupon.id)}>
                         사용
-                      </Button>
+                      </PrimaryButton>
                     </div>
-                  </Card>
+                  </ModernCard>
                 </motion.div>
               );
             })}
 
             {MOCK_AVAILABLE_COUPONS.length === 0 && (
-              <Card variant="glass">
-                <div className="text-center py-8">
-                  <Tag size={48} className="mx-auto mb-3 text-gray-600" />
-                  <p className="text-gray-400">사용 가능한 쿠폰이 없습니다</p>
-                </div>
-              </Card>
+              <ModernCard style={{ padding: '40px 20px', textAlign: 'center' }}>
+                <Tag size={48} color="#374151" style={{ margin: '0 auto 12px' }} />
+                <p style={{ color: '#6B7280', margin: 0 }}>사용 가능한 쿠폰이 없습니다</p>
+              </ModernCard>
             )}
-          </motion.div>
+          </motion.section>
         )}
 
         {/* 포인트샵 탭 */}
         {activeTab === 'point' && (
-          <motion.div
+          <motion.section
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="space-y-4"
           >
-            <div className="grid grid-cols-2 gap-3">
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '12px',
+            }}>
               {MOCK_POINT_ITEMS.map((item, idx) => {
                 const canAfford = userPoints >= item.points;
 
@@ -302,28 +315,39 @@ export default function RewardUsePage() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: idx * 0.05 }}
                   >
-                    <Card
-                      className={`text-center ${!canAfford ? 'opacity-50' : ''}`}
+                    <ModernCard
                       onClick={() => canAfford && handleExchangeItem(item.id)}
+                      style={{
+                        padding: '20px 16px',
+                        textAlign: 'center',
+                        opacity: canAfford ? 1 : 0.5,
+                        cursor: canAfford ? 'pointer' : 'not-allowed',
+                      }}
                     >
-                      <div className="text-4xl mb-2">{item.image}</div>
-                      <h4 className="font-bold text-white text-sm mb-1">{item.name}</h4>
-                      <Badge type="status">{item.category}</Badge>
-                      <div className="mt-2 flex items-center justify-center gap-1">
-                        <span className={`font-bold ${canAfford ? 'text-energy-orange' : 'text-gray-500'}`}>
+                      <div style={{ fontSize: '40px', marginBottom: '10px' }}>{item.image}</div>
+                      <h4 style={{ fontWeight: 'bold', color: 'white', fontSize: '14px', margin: '0 0 6px' }}>
+                        {item.name}
+                      </h4>
+                      <UITag color="blue" size="sm">{item.category}</UITag>
+                      <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                        <span style={{
+                          fontWeight: 'bold',
+                          fontSize: '16px',
+                          color: canAfford ? '#FF6B35' : '#6B7280',
+                        }}>
                           {item.points.toLocaleString()}
                         </span>
-                        <span className="text-xs text-gray-400">P</span>
+                        <span style={{ fontSize: '12px', color: '#6B7280' }}>P</span>
                       </div>
                       {!canAfford && (
-                        <p className="text-xs text-power-pink mt-1">포인트 부족</p>
+                        <p style={{ fontSize: '11px', color: '#FF006E', margin: '6px 0 0' }}>포인트 부족</p>
                       )}
-                    </Card>
+                    </ModernCard>
                   </motion.div>
                 );
               })}
             </div>
-          </motion.div>
+          </motion.section>
         )}
       </div>
 
@@ -334,42 +358,42 @@ export default function RewardUsePage() {
         title="쿠폰 사용"
       >
         {selectedCouponData && (
-          <div className="space-y-4">
-            <div className="text-center py-4">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-xl glass flex items-center justify-center">
-                {selectedCouponData.icon}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ textAlign: 'center', padding: '20px 0' }}>
+              <div style={{ margin: '0 auto 16px', width: 'fit-content' }}>
+                <IconBox color="orange" size={64}>
+                  {selectedCouponData.icon}
+                </IconBox>
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">{selectedCouponData.title}</h3>
-              <p className="text-gray-400">{selectedCouponData.description}</p>
+              <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: 'white', margin: '0 0 8px' }}>
+                {selectedCouponData.title}
+              </h3>
+              <p style={{ color: '#9CA3AF', margin: 0 }}>{selectedCouponData.description}</p>
             </div>
 
             {selectedCouponData.minAmount && (
-              <div className="p-3 bg-cyber-mid rounded-lg flex items-center gap-2">
-                <AlertCircle size={16} className="text-cyber-yellow" />
-                <span className="text-sm text-gray-300">
+              <div style={{
+                padding: '12px 16px',
+                background: '#1A1A24',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}>
+                <AlertCircle size={18} color="#FFD60A" />
+                <span style={{ fontSize: '13px', color: '#9CA3AF' }}>
                   {selectedCouponData.minAmount.toLocaleString()}원 이상 결제 시 사용 가능
                 </span>
               </div>
             )}
 
-            <div className="flex gap-3">
-              <Button
-                variant="ghost"
-                size="lg"
-                className="flex-1"
-                onClick={() => setShowUseModal(false)}
-              >
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <SecondaryButton fullWidth size="lg" onClick={() => setShowUseModal(false)}>
                 취소
-              </Button>
-              <Button
-                variant="energy"
-                size="lg"
-                className="flex-1"
-                onClick={confirmUseCoupon}
-                glow
-              >
+              </SecondaryButton>
+              <PrimaryButton fullWidth size="lg" onClick={confirmUseCoupon}>
                 사용하기
-              </Button>
+              </PrimaryButton>
             </div>
           </div>
         )}
@@ -382,53 +406,60 @@ export default function RewardUsePage() {
         title="포인트 교환"
       >
         {selectedItemData && (
-          <div className="space-y-4">
-            <div className="text-center py-4">
-              <div className="text-6xl mb-4">{selectedItemData.image}</div>
-              <h3 className="text-xl font-bold text-white mb-2">{selectedItemData.name}</h3>
-              <div className="flex items-center justify-center gap-2">
-                <span className="text-2xl font-bold text-energy-orange">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ textAlign: 'center', padding: '20px 0' }}>
+              <div style={{ fontSize: '64px', marginBottom: '16px' }}>{selectedItemData.image}</div>
+              <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: 'white', margin: '0 0 8px' }}>
+                {selectedItemData.name}
+              </h3>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                <span style={{
+                  fontSize: '24px',
+                  fontWeight: 'bold',
+                  color: '#FF6B35',
+                }}>
                   {selectedItemData.points.toLocaleString()}
                 </span>
-                <span className="text-gray-400">P</span>
+                <span style={{ color: '#9CA3AF' }}>P</span>
               </div>
             </div>
 
-            <div className="p-3 bg-cyber-mid rounded-lg space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-400">현재 포인트</span>
-                <span className="text-white">{userPoints.toLocaleString()}P</span>
+            <div style={{
+              padding: '16px',
+              background: '#1A1A24',
+              borderRadius: '12px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                <span style={{ color: '#6B7280' }}>현재 포인트</span>
+                <span style={{ color: 'white' }}>{userPoints.toLocaleString()}P</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-400">차감 포인트</span>
-                <span className="text-power-pink">-{selectedItemData.points.toLocaleString()}P</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                <span style={{ color: '#6B7280' }}>차감 포인트</span>
+                <span style={{ color: '#FF006E' }}>-{selectedItemData.points.toLocaleString()}P</span>
               </div>
-              <div className="pt-2 border-t border-white/10 flex justify-between">
-                <span className="text-gray-400">교환 후 잔여</span>
-                <span className="text-neon-green font-bold">
+              <div style={{
+                paddingTop: '10px',
+                borderTop: '1px solid rgba(255,255,255,0.1)',
+                display: 'flex',
+                justifyContent: 'space-between',
+              }}>
+                <span style={{ color: '#6B7280' }}>교환 후 잔여</span>
+                <span style={{ fontWeight: 'bold', color: '#39FF14' }}>
                   {(userPoints - selectedItemData.points).toLocaleString()}P
                 </span>
               </div>
             </div>
 
-            <div className="flex gap-3">
-              <Button
-                variant="ghost"
-                size="lg"
-                className="flex-1"
-                onClick={() => setShowExchangeModal(false)}
-              >
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <SecondaryButton fullWidth size="lg" onClick={() => setShowExchangeModal(false)}>
                 취소
-              </Button>
-              <Button
-                variant="energy"
-                size="lg"
-                className="flex-1"
-                onClick={confirmExchange}
-                glow
-              >
+              </SecondaryButton>
+              <PrimaryButton fullWidth size="lg" onClick={confirmExchange}>
                 교환하기
-              </Button>
+              </PrimaryButton>
             </div>
           </div>
         )}

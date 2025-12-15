@@ -3,10 +3,15 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import Header from '@/components/layout/Header';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
-import Badge from '@/components/ui/Badge';
+import {
+  ModernCard,
+  FeatureCard,
+  PageHeader,
+  PrimaryButton,
+  SecondaryButton,
+  Tag,
+  ProgressBar,
+} from '@/components/ui/ModernUI';
 import Modal from '@/components/ui/Modal';
 import {
   CreditCard,
@@ -93,75 +98,88 @@ export default function MembershipPage() {
   const isExpiringSoon = MOCK_MEMBERSHIP.daysRemaining <= 30;
 
   return (
-    <div className="min-h-screen bg-cyber-dark pb-24">
-      <Header title="회원권 정보" showBack={true} showNotification={false} />
+    <div style={{ minHeight: '100vh', background: '#0D0D12', paddingBottom: '140px' }}>
+      <PageHeader title="회원권 정보" showBack />
 
-      <div className="p-4 space-y-6">
+      <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {/* 회원권 카드 */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <Card
-            variant="hologram"
-            glow
-            className="relative overflow-hidden bg-gradient-to-br from-tech-purple/30 via-electric-blue/20 to-neon-green/10"
-          >
-            {/* 배경 장식 */}
-            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-premium/20 rounded-full blur-3xl" />
+          <FeatureCard>
+            <div style={{ position: 'relative' }}>
+              {/* 배경 장식 */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                width: '160px',
+                height: '160px',
+                background: 'linear-gradient(135deg, rgba(114, 9, 183, 0.2), rgba(0, 217, 255, 0.1))',
+                borderRadius: '50%',
+                filter: 'blur(40px)',
+              }} />
 
-            <div className="relative z-10">
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <Badge type="premium">
-                    <Star size={12} className="mr-1" />
-                    {MOCK_MEMBERSHIP.type}
-                  </Badge>
-                  <h2 className="text-2xl font-bold text-white mt-2">{MOCK_MEMBERSHIP.name}</h2>
-                </div>
-                <div className="text-right">
-                  <CreditCard size={32} className="text-tech-purple mb-1" />
-                </div>
-              </div>
-
-              {/* 기간 정보 */}
-              <div className="space-y-3 mb-6">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-400">이용 기간</span>
-                  <span className="text-white">
-                    {formatDate(MOCK_MEMBERSHIP.startDate)} ~ {formatDate(MOCK_MEMBERSHIP.endDate)}
-                  </span>
+              <div style={{ position: 'relative', zIndex: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '24px' }}>
+                  <div>
+                    <Tag color="purple">
+                      <Star size={12} style={{ marginRight: '4px' }} />
+                      {MOCK_MEMBERSHIP.type}
+                    </Tag>
+                    <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', marginTop: '8px' }}>
+                      {MOCK_MEMBERSHIP.name}
+                    </h2>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <CreditCard size={32} style={{ color: '#7209B7', marginBottom: '4px' }} />
+                  </div>
                 </div>
 
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-400">잔여 기간</span>
-                    <span
-                      className={`text-sm font-bold ${
-                        isExpiringSoon ? 'text-power-pink' : 'text-neon-green'
-                      }`}
-                    >
-                      {MOCK_MEMBERSHIP.daysRemaining}일 남음
+                {/* 기간 정보 */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '14px' }}>
+                    <span style={{ color: '#9CA3AF' }}>이용 기간</span>
+                    <span style={{ color: 'white' }}>
+                      {formatDate(MOCK_MEMBERSHIP.startDate)} ~ {formatDate(MOCK_MEMBERSHIP.endDate)}
                     </span>
                   </div>
-                  <div className="h-2 bg-cyber-dark rounded-full overflow-hidden">
-                    <div
-                      className={`h-full ${
-                        isExpiringSoon ? 'bg-gradient-to-r from-power-pink to-energy-orange' : 'bg-gradient-growth'
-                      }`}
-                      style={{ width: `${100 - progressPercent}%` }}
+
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '14px', color: '#9CA3AF' }}>잔여 기간</span>
+                      <span style={{
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        color: isExpiringSoon ? '#FF006E' : '#39FF14',
+                      }}>
+                        {MOCK_MEMBERSHIP.daysRemaining}일 남음
+                      </span>
+                    </div>
+                    <ProgressBar
+                      percentage={100 - progressPercent}
+                      color={isExpiringSoon ? 'orange' : 'green'}
                     />
                   </div>
                 </div>
-              </div>
 
-              {isExpiringSoon && (
-                <div className="p-3 bg-power-pink/10 border border-power-pink/30 rounded-lg flex items-center gap-2">
-                  <AlertCircle size={18} className="text-power-pink flex-shrink-0" />
-                  <p className="text-sm text-gray-300">
-                    회원권 만료가 가까워졌습니다. 갱신 시 특별 할인을 받아보세요!
-                  </p>
-                </div>
-              )}
+                {isExpiringSoon && (
+                  <div style={{
+                    padding: '12px',
+                    background: 'rgba(255, 0, 110, 0.1)',
+                    border: '1px solid rgba(255, 0, 110, 0.3)',
+                    borderRadius: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}>
+                    <AlertCircle size={18} style={{ color: '#FF006E', flexShrink: 0 }} />
+                    <p style={{ fontSize: '14px', color: '#D1D5DB' }}>
+                      회원권 만료가 가까워졌습니다. 갱신 시 특별 할인을 받아보세요!
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
-          </Card>
+          </FeatureCard>
         </motion.div>
 
         {/* PT & GX 현황 */}
@@ -169,53 +187,55 @@ export default function MembershipPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="grid grid-cols-2 gap-3"
+          style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}
         >
           {/* PT */}
-          <Card>
-            <div className="flex items-center gap-2 mb-3">
-              <Dumbbell size={18} className="text-energy-orange" />
-              <h3 className="font-bold text-white">PT 세션</h3>
+          <ModernCard>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              <Dumbbell size={18} style={{ color: '#FF6B35' }} />
+              <h3 style={{ fontWeight: 'bold', color: 'white' }}>PT 세션</h3>
             </div>
-            <div className="text-center mb-3">
-              <span className="text-3xl font-bold text-gradient-energy">
+            <div style={{ textAlign: 'center', marginBottom: '12px' }}>
+              <span style={{
+                fontSize: '30px',
+                fontWeight: 'bold',
+                background: 'linear-gradient(135deg, #FF6B35, #FF006E)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>
                 {MOCK_MEMBERSHIP.ptSessions.remaining}
               </span>
-              <span className="text-gray-400">/{MOCK_MEMBERSHIP.ptSessions.total}회</span>
+              <span style={{ color: '#9CA3AF' }}>/{MOCK_MEMBERSHIP.ptSessions.total}회</span>
             </div>
-            <div className="h-1.5 bg-cyber-mid rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-energy"
-                style={{ width: `${100 - ptProgressPercent}%` }}
-              />
-            </div>
-            <p className="text-xs text-gray-400 mt-2 text-center">
+            <ProgressBar percentage={100 - ptProgressPercent} color="orange" />
+            <p style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '8px', textAlign: 'center' }}>
               {MOCK_MEMBERSHIP.ptSessions.used}회 사용
             </p>
-          </Card>
+          </ModernCard>
 
           {/* GX */}
-          <Card>
-            <div className="flex items-center gap-2 mb-3">
-              <Users size={18} className="text-neon-green" />
-              <h3 className="font-bold text-white">GX 클래스</h3>
+          <ModernCard>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              <Users size={18} style={{ color: '#39FF14' }} />
+              <h3 style={{ fontWeight: 'bold', color: 'white' }}>GX 클래스</h3>
             </div>
-            <div className="text-center mb-3">
-              <span className="text-3xl font-bold text-gradient-growth">
+            <div style={{ textAlign: 'center', marginBottom: '12px' }}>
+              <span style={{
+                fontSize: '30px',
+                fontWeight: 'bold',
+                background: 'linear-gradient(135deg, #39FF14, #00D9FF)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>
                 {MOCK_MEMBERSHIP.gxClasses.remaining}
               </span>
-              <span className="text-gray-400">/{MOCK_MEMBERSHIP.gxClasses.total}회</span>
+              <span style={{ color: '#9CA3AF' }}>/{MOCK_MEMBERSHIP.gxClasses.total}회</span>
             </div>
-            <div className="h-1.5 bg-cyber-mid rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-growth"
-                style={{ width: `${100 - gxProgressPercent}%` }}
-              />
-            </div>
-            <p className="text-xs text-gray-400 mt-2 text-center">
+            <ProgressBar percentage={100 - gxProgressPercent} color="green" />
+            <p style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '8px', textAlign: 'center' }}>
               {MOCK_MEMBERSHIP.gxClasses.used}회 사용
             </p>
-          </Card>
+          </ModernCard>
         </motion.div>
 
         {/* 혜택 */}
@@ -224,20 +244,27 @@ export default function MembershipPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Card>
-            <h3 className="font-bold text-white mb-4">포함된 혜택</h3>
-            <div className="grid grid-cols-2 gap-3">
+          <ModernCard>
+            <h3 style={{ fontWeight: 'bold', color: 'white', marginBottom: '16px' }}>포함된 혜택</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               {MOCK_MEMBERSHIP.benefits.map((benefit, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-2 p-2 glass-dark rounded-lg"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px',
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    borderRadius: '8px',
+                  }}
                 >
-                  <div className="text-electric-blue">{benefit.icon}</div>
-                  <span className="text-sm text-gray-300">{benefit.name}</span>
+                  <div style={{ color: '#00D9FF' }}>{benefit.icon}</div>
+                  <span style={{ fontSize: '14px', color: '#D1D5DB' }}>{benefit.name}</span>
                 </div>
               ))}
             </div>
-          </Card>
+          </ModernCard>
         </motion.div>
 
         {/* 결제 내역 */}
@@ -246,22 +273,30 @@ export default function MembershipPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <Card onClick={() => setShowHistoryModal(true)}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-cyber-mid flex items-center justify-center">
-                  <CreditCard size={20} className="text-electric-blue" />
+          <ModernCard onClick={() => setShowHistoryModal(true)} style={{ cursor: 'pointer' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '8px',
+                  background: '#1A1A24',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <CreditCard size={20} style={{ color: '#00D9FF' }} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-white">결제 내역</h3>
-                  <p className="text-sm text-gray-400">
+                  <h3 style={{ fontWeight: 'bold', color: 'white' }}>결제 내역</h3>
+                  <p style={{ fontSize: '14px', color: '#9CA3AF' }}>
                     최근 결제: {formatDate(MOCK_MEMBERSHIP.paymentHistory[0].date)}
                   </p>
                 </div>
               </div>
-              <ChevronRight size={20} className="text-gray-400" />
+              <ChevronRight size={20} style={{ color: '#9CA3AF' }} />
             </div>
-          </Card>
+          </ModernCard>
         </motion.div>
 
         {/* 추가 서비스 */}
@@ -270,35 +305,50 @@ export default function MembershipPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <Card variant="glass">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-premium/20 flex items-center justify-center">
-                <Gift size={24} className="text-tech-purple" />
+          <ModernCard>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '12px',
+                background: 'rgba(114, 9, 183, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <Gift size={24} style={{ color: '#7209B7' }} />
               </div>
-              <div className="flex-1">
-                <h3 className="font-bold text-white">PT 추가 구매</h3>
-                <p className="text-sm text-gray-400">1회당 80,000원 (10% 할인 적용)</p>
+              <div style={{ flex: 1 }}>
+                <h3 style={{ fontWeight: 'bold', color: 'white' }}>PT 추가 구매</h3>
+                <p style={{ fontSize: '14px', color: '#9CA3AF' }}>1회당 80,000원 (10% 할인 적용)</p>
               </div>
-              <Button variant="ghost" size="sm">
+              <SecondaryButton size="sm">
                 구매
-              </Button>
+              </SecondaryButton>
             </div>
-          </Card>
+          </ModernCard>
         </motion.div>
       </div>
 
       {/* 하단 고정 버튼 */}
-      <div className="fixed bottom-16 left-0 right-0 max-w-[425px] mx-auto p-4 bg-gradient-to-t from-cyber-dark via-cyber-dark to-transparent">
-        <Button
-          variant="energy"
+      <div style={{
+        position: 'fixed',
+        bottom: '80px',
+        left: 0,
+        right: 0,
+        maxWidth: '425px',
+        margin: '0 auto',
+        padding: '16px 20px',
+        background: 'linear-gradient(to top, #0D0D12 70%, transparent)',
+      }}>
+        <PrimaryButton
+          fullWidth
           size="lg"
-          className="w-full"
           onClick={() => router.push('/payment/renewal')}
-          glow
-          shine
+          icon={<Calendar size={20} />}
         >
           {isExpiringSoon ? '특별 할인으로 갱신하기' : '회원권 갱신하기'}
-        </Button>
+        </PrimaryButton>
       </div>
 
       {/* 결제 내역 모달 */}
@@ -307,33 +357,36 @@ export default function MembershipPage() {
         onClose={() => setShowHistoryModal(false)}
         title="결제 내역"
       >
-        <div className="space-y-3 max-h-96 overflow-y-auto">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '384px', overflowY: 'auto' }}>
           {MOCK_MEMBERSHIP.paymentHistory.map((payment) => (
             <div
               key={payment.id}
-              className="p-4 bg-cyber-mid rounded-lg"
+              style={{
+                padding: '16px',
+                background: '#1A1A24',
+                borderRadius: '8px',
+              }}
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-400">{formatDate(payment.date)}</span>
-                <Badge type="growth">
-                  <CheckCircle size={12} className="mr-1" />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontSize: '14px', color: '#9CA3AF' }}>{formatDate(payment.date)}</span>
+                <Tag color="green">
+                  <CheckCircle size={12} style={{ marginRight: '4px' }} />
                   완료
-                </Badge>
+                </Tag>
               </div>
-              <div className="flex items-center justify-between">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
-                  <p className="font-bold text-white">
+                  <p style={{ fontWeight: 'bold', color: 'white' }}>
                     {payment.amount.toLocaleString()}원
                   </p>
-                  <p className="text-xs text-gray-400">{payment.method}</p>
+                  <p style={{ fontSize: '12px', color: '#9CA3AF' }}>{payment.method}</p>
                 </div>
-                <Button
-                  variant="ghost"
+                <SecondaryButton
                   size="sm"
                   onClick={() => router.push('/payment/success')}
                 >
                   영수증
-                </Button>
+                </SecondaryButton>
               </div>
             </div>
           ))}

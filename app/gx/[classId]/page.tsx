@@ -19,7 +19,7 @@ export default function GXClassDetailPage() {
   const router = useRouter();
   const params = useParams();
   const [showReserveModal, setShowReserveModal] = useState(false);
-  const [isReserved, setIsReserved] = useState(false);
+  const [reservationStatus, setReservationStatus] = useState<'none' | 'reserved' | 'waitlisted'>('none');
 
   const gxClass = MOCK_GX_CLASSES.find((c) => c.id === params.classId) || MOCK_GX_CLASSES[0];
   const percentage = (gxClass.enrolled / gxClass.capacity) * 100;
@@ -53,7 +53,11 @@ export default function GXClassDetailPage() {
   ];
 
   const handleReserve = () => {
-    setIsReserved(true);
+    if (isFull) {
+      setReservationStatus('waitlisted');
+    } else {
+      setReservationStatus('reserved');
+    }
     setShowReserveModal(false);
   };
 
@@ -275,10 +279,42 @@ export default function GXClassDetailPage() {
         borderTop: '1px solid rgba(255, 255, 255, 0.1)'
       }}>
         <div style={{ maxWidth: '768px', margin: '0 auto' }}>
-          {isReserved ? (
-            <PrimaryButton disabled fullWidth>
-              예약 완료
-            </PrimaryButton>
+          {reservationStatus === 'reserved' ? (
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+            >
+              <div style={{
+                padding: '16px',
+                borderRadius: '16px',
+                background: 'linear-gradient(135deg, rgba(57, 255, 20, 0.15), rgba(0, 217, 255, 0.1))',
+                border: '2px solid #39FF14',
+                textAlign: 'center',
+              }}>
+                <span style={{ fontSize: '20px', marginRight: '8px' }}>✅</span>
+                <span style={{ color: '#39FF14', fontWeight: 'bold', fontSize: '16px' }}>
+                  예약 완료
+                </span>
+              </div>
+            </motion.div>
+          ) : reservationStatus === 'waitlisted' ? (
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+            >
+              <div style={{
+                padding: '16px',
+                borderRadius: '16px',
+                background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(255, 0, 110, 0.1))',
+                border: '2px solid #FF6B35',
+                textAlign: 'center',
+              }}>
+                <span style={{ fontSize: '20px', marginRight: '8px' }}>📋</span>
+                <span style={{ color: '#FF6B35', fontWeight: 'bold', fontSize: '16px' }}>
+                  대기 등록 완료
+                </span>
+              </div>
+            </motion.div>
           ) : isFull ? (
             <PrimaryButton onClick={() => setShowReserveModal(true)} fullWidth>
               대기 등록하기

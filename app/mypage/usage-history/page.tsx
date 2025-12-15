@@ -4,10 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Header from '@/components/layout/Header';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
-import Tabs from '@/components/ui/Tabs';
 import {
   Dumbbell,
   Users,
@@ -115,6 +112,86 @@ const MONTHLY_SUMMARY = {
   favoriteGX: '스피닝',
 };
 
+// Card Component
+const Card = ({
+  children,
+  variant = 'default',
+  glow = false,
+  style = {},
+}: {
+  children: React.ReactNode;
+  variant?: 'default' | 'hologram' | 'glass';
+  glow?: boolean;
+  style?: React.CSSProperties;
+}) => {
+  const baseStyle: React.CSSProperties = {
+    background: variant === 'hologram'
+      ? 'linear-gradient(145deg, rgba(26, 26, 36, 0.95), rgba(13, 13, 18, 0.98))'
+      : variant === 'glass'
+      ? 'rgba(255, 255, 255, 0.05)'
+      : 'linear-gradient(145deg, rgba(26, 26, 36, 0.95), rgba(13, 13, 18, 0.98))',
+    border: variant === 'hologram'
+      ? '1px solid rgba(0, 217, 255, 0.3)'
+      : '1px solid rgba(255, 255, 255, 0.1)',
+    borderRadius: '16px',
+    padding: '16px',
+    backdropFilter: 'blur(20px)',
+    boxShadow: glow
+      ? '0 0 20px rgba(0, 217, 255, 0.2)'
+      : '0 4px 24px rgba(0, 0, 0, 0.4)',
+    ...style,
+  };
+
+  return <div style={baseStyle}>{children}</div>;
+};
+
+// Tabs Component
+const Tabs = ({
+  tabs,
+  activeTab,
+  onChange,
+}: {
+  tabs: { id: string; label: string; content: React.ReactNode }[];
+  activeTab?: string;
+  onChange?: (id: string) => void;
+}) => {
+  const [internalActive, setInternalActive] = useState(tabs[0]?.id || '');
+  const currentTab = activeTab || internalActive;
+  const handleChange = onChange || setInternalActive;
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => handleChange(tab.id)}
+            style={{
+              flex: 1,
+              padding: '12px 16px',
+              borderRadius: '12px',
+              border: 'none',
+              background: currentTab === tab.id
+                ? 'linear-gradient(135deg, #00D9FF, #7209B7)'
+                : 'rgba(255, 255, 255, 0.05)',
+              color: currentTab === tab.id ? 'white' : '#9CA3AF',
+              fontWeight: 600,
+              fontSize: '14px',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+      <div>
+        {tabs.find((tab) => tab.id === currentTab)?.content}
+      </div>
+    </div>
+  );
+};
+
 export default function UsageHistoryPage() {
   const router = useRouter();
 
@@ -132,7 +209,7 @@ export default function UsageHistoryPage() {
       id: 'pt',
       label: 'PT',
       content: (
-        <div className="space-y-3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {MOCK_USAGE_HISTORY.pt.map((session, idx) => (
             <motion.div
               key={session.id}
@@ -141,28 +218,37 @@ export default function UsageHistoryPage() {
               transition={{ delay: idx * 0.05 }}
             >
               <Card>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-energy/20 flex items-center justify-center flex-shrink-0">
-                    <Dumbbell size={24} className="text-energy-orange" />
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '12px',
+                    background: 'rgba(255, 107, 53, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}>
+                    <Dumbbell size={24} color="#FF6B35" />
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <h4 className="font-bold text-white">{session.trainer} 트레이너</h4>
-                      <span className="text-xs text-gray-400">{formatDate(session.date)}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <h4 style={{ fontWeight: 'bold', color: 'white' }}>{session.trainer} 트레이너</h4>
+                      <span style={{ fontSize: '12px', color: '#9CA3AF' }}>{formatDate(session.date)}</span>
                     </div>
-                    <div className="flex items-center gap-3 text-sm text-gray-400 mb-2">
-                      <span className="flex items-center gap-1">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '14px', color: '#9CA3AF', marginBottom: '8px' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <Timer size={14} />
                         {session.duration}분
                       </span>
-                      <span className="flex items-center gap-1">
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <TrendingUp size={14} />
                         {session.calories}kcal
                       </span>
                     </div>
-                    <div className="flex flex-wrap gap-1">
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                       {session.exercises.map((ex, i) => (
-                        <Badge key={i} type="status">
+                        <Badge key={i} type="info">
                           {ex}
                         </Badge>
                       ))}
@@ -179,7 +265,7 @@ export default function UsageHistoryPage() {
       id: 'gx',
       label: 'GX',
       content: (
-        <div className="space-y-3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {MOCK_USAGE_HISTORY.gx.map((session, idx) => (
             <motion.div
               key={session.id}
@@ -188,22 +274,31 @@ export default function UsageHistoryPage() {
               transition={{ delay: idx * 0.05 }}
             >
               <Card>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-growth/20 flex items-center justify-center flex-shrink-0">
-                    <Users size={24} className="text-neon-green" />
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '12px',
+                    background: 'rgba(57, 255, 20, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}>
+                    <Users size={24} color="#39FF14" />
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <h4 className="font-bold text-white">{session.className}</h4>
-                      <span className="text-xs text-gray-400">{formatDate(session.date)}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <h4 style={{ fontWeight: 'bold', color: 'white' }}>{session.className}</h4>
+                      <span style={{ fontSize: '12px', color: '#9CA3AF' }}>{formatDate(session.date)}</span>
                     </div>
-                    <p className="text-sm text-gray-400 mb-2">{session.instructor} 강사</p>
-                    <div className="flex items-center gap-3 text-sm">
-                      <span className="flex items-center gap-1 text-electric-blue">
+                    <p style={{ fontSize: '14px', color: '#9CA3AF', marginBottom: '8px' }}>{session.instructor} 강사</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '14px' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#00D9FF' }}>
                         <Timer size={14} />
                         {session.duration}분
                       </span>
-                      <span className="flex items-center gap-1 text-energy-orange">
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#FF6B35' }}>
                         <TrendingUp size={14} />
                         {session.calories}kcal
                       </span>
@@ -220,7 +315,7 @@ export default function UsageHistoryPage() {
       id: 'facilities',
       label: '시설',
       content: (
-        <div className="space-y-3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {MOCK_USAGE_HISTORY.facilities.map((usage, idx) => (
             <motion.div
               key={usage.id}
@@ -229,21 +324,30 @@ export default function UsageHistoryPage() {
               transition={{ delay: idx * 0.05 }}
             >
               <Card>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-premium/20 flex items-center justify-center flex-shrink-0">
-                    <Droplets size={24} className="text-tech-purple" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '12px',
+                    background: 'rgba(114, 9, 183, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}>
+                    <Droplets size={24} color="#7209B7" />
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <h4 className="font-bold text-white">{usage.type}</h4>
-                      <span className="text-xs text-gray-400">{formatDate(usage.date)}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <h4 style={{ fontWeight: 'bold', color: 'white' }}>{usage.type}</h4>
+                      <span style={{ fontSize: '12px', color: '#9CA3AF' }}>{formatDate(usage.date)}</span>
                     </div>
-                    <div className="flex items-center gap-3 text-sm text-gray-400">
-                      <span className="flex items-center gap-1">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '14px', color: '#9CA3AF' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <Clock size={14} />
                         {usage.time}
                       </span>
-                      <span className="flex items-center gap-1">
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <Timer size={14} />
                         {usage.duration}분 이용
                       </span>
@@ -259,50 +363,50 @@ export default function UsageHistoryPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-cyber-dark pb-20">
-      <Header title="이용 내역" showBack={true} showNotification={false} />
+    <div style={{ minHeight: '100vh', background: '#0D0D12', paddingBottom: '80px' }}>
+      <Header title="이용 내역" showBack={true} showLogo={true} showNotification={false} />
 
-      <div className="p-4 space-y-6">
+      <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {/* 월간 요약 */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <Card variant="hologram" glow>
-            <h3 className="font-bold text-white mb-4">이번 달 이용 현황</h3>
+            <h3 style={{ fontWeight: 'bold', color: 'white', marginBottom: '16px' }}>이번 달 이용 현황</h3>
 
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              <div className="p-3 glass-dark rounded-lg text-center">
-                <Dumbbell size={24} className="text-energy-orange mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">{MONTHLY_SUMMARY.totalPT}회</div>
-                <div className="text-xs text-gray-400">PT 세션</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '16px' }}>
+              <div style={{ padding: '12px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px', textAlign: 'center' }}>
+                <Dumbbell size={24} color="#FF6B35" style={{ margin: '0 auto 8px' }} />
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white' }}>{MONTHLY_SUMMARY.totalPT}회</div>
+                <div style={{ fontSize: '12px', color: '#9CA3AF' }}>PT 세션</div>
               </div>
-              <div className="p-3 glass-dark rounded-lg text-center">
-                <Users size={24} className="text-neon-green mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">{MONTHLY_SUMMARY.totalGX}회</div>
-                <div className="text-xs text-gray-400">GX 클래스</div>
+              <div style={{ padding: '12px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px', textAlign: 'center' }}>
+                <Users size={24} color="#39FF14" style={{ margin: '0 auto 8px' }} />
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white' }}>{MONTHLY_SUMMARY.totalGX}회</div>
+                <div style={{ fontSize: '12px', color: '#9CA3AF' }}>GX 클래스</div>
               </div>
-              <div className="p-3 glass-dark rounded-lg text-center">
-                <TrendingUp size={24} className="text-electric-blue mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">
+              <div style={{ padding: '12px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px', textAlign: 'center' }}>
+                <TrendingUp size={24} color="#00D9FF" style={{ margin: '0 auto 8px' }} />
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white' }}>
                   {MONTHLY_SUMMARY.totalCalories.toLocaleString()}
                 </div>
-                <div className="text-xs text-gray-400">소모 칼로리</div>
+                <div style={{ fontSize: '12px', color: '#9CA3AF' }}>소모 칼로리</div>
               </div>
-              <div className="p-3 glass-dark rounded-lg text-center">
-                <Timer size={24} className="text-tech-purple mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">
+              <div style={{ padding: '12px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px', textAlign: 'center' }}>
+                <Timer size={24} color="#7209B7" style={{ margin: '0 auto 8px' }} />
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white' }}>
                   {Math.round(MONTHLY_SUMMARY.totalTime / 60)}시간
                 </div>
-                <div className="text-xs text-gray-400">총 운동 시간</div>
+                <div style={{ fontSize: '12px', color: '#9CA3AF' }}>총 운동 시간</div>
               </div>
             </div>
 
-            <div className="space-y-2 pt-3 border-t border-white/10">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-400">자주 이용한 시설</span>
-                <span className="text-white">{MONTHLY_SUMMARY.mostUsedFacility}</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                <span style={{ color: '#9CA3AF' }}>자주 이용한 시설</span>
+                <span style={{ color: 'white' }}>{MONTHLY_SUMMARY.mostUsedFacility}</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-400">인기 GX 클래스</span>
-                <span className="text-white">{MONTHLY_SUMMARY.favoriteGX}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                <span style={{ color: '#9CA3AF' }}>인기 GX 클래스</span>
+                <span style={{ color: 'white' }}>{MONTHLY_SUMMARY.favoriteGX}</span>
               </div>
             </div>
           </Card>

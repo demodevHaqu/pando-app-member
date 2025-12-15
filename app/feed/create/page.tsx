@@ -66,7 +66,7 @@ export default function CreatePostPage() {
 
   return (
     <div className="min-h-screen bg-cyber-dark pb-24">
-      <Header title="운동 인증하기" showBack={true} showNotification={false} />
+      <Header title="운동 인증하기" showBack={true} showLogo={true} showNotification={false} />
 
       <div className="p-4 space-y-6">
         {/* 내용 입력 */}

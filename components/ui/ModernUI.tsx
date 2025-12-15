@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 // ============ Modern Card ============
@@ -279,6 +279,8 @@ export const PageHeader = ({
   title,
   subtitle,
   showBack = true,
+  showHome = false,
+  showLogo = true,
   rightElement,
   transparent = false,
   onBack
@@ -286,12 +288,15 @@ export const PageHeader = ({
   title: string;
   subtitle?: string;
   showBack?: boolean;
+  showHome?: boolean;
+  showLogo?: boolean;
   rightElement?: React.ReactNode;
   transparent?: boolean;
   onBack?: () => void;
 }) => {
   const router = useRouter();
   const handleBack = onBack || (() => router.back());
+  const handleHome = () => router.push('/');
 
   return (
     <header style={{
@@ -310,13 +315,38 @@ export const PageHeader = ({
         minHeight: '64px',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Logo - Always clickable to go home */}
+          {showLogo && (
+            <div
+              onClick={handleHome}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                cursor: 'pointer',
+              }}
+            >
+              <div style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, #00D9FF, #7209B7)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 2px 10px rgba(0, 217, 255, 0.3)',
+              }}>
+                <span style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}>P</span>
+              </div>
+            </div>
+          )}
           {showBack && (
             <button
               onClick={handleBack}
               style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '12px',
+                width: '36px',
+                height: '36px',
+                borderRadius: '10px',
                 background: 'rgba(255, 255, 255, 0.05)',
                 border: '1px solid rgba(255, 255, 255, 0.08)',
                 display: 'flex',
@@ -325,7 +355,25 @@ export const PageHeader = ({
                 cursor: 'pointer',
               }}
             >
-              <ChevronLeft size={20} color="#9CA3AF" />
+              <ChevronLeft size={18} color="#9CA3AF" />
+            </button>
+          )}
+          {showHome && !showBack && !showLogo && (
+            <button
+              onClick={handleHome}
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '10px',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+              }}
+            >
+              <Home size={18} color="#9CA3AF" />
             </button>
           )}
           <div>

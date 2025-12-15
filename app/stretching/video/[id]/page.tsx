@@ -77,7 +77,7 @@ export default function StretchingVideoPage() {
 
   return (
     <div className="min-h-screen bg-cyber-dark">
-      <Header title="스트레칭 상세" showBack={true} />
+      <Header title="스트레칭 상세" showBack={true} showLogo={true} />
 
       <div className="pb-20">
         {/* Video Player Area */}

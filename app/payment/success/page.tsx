@@ -1,15 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Header from '@/components/layout/Header';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
-import { CheckCircle, Download, Share2, Home, Calendar, FileText } from 'lucide-react';
+import { CheckCircle, Download, Share2, Home, Calendar } from 'lucide-react';
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -43,7 +43,7 @@ export default function PaymentSuccessPage() {
 
   return (
     <div className="min-h-screen bg-cyber-dark pb-24">
-      <Header title="결제 완료" showBack={false} showNotification={false} />
+      <Header title="결제 완료" showBack={false} showLogo={true} showNotification={false} />
 
       <div className="p-4 space-y-6">
         {/* 결제 완료 아이콘 */}
@@ -192,5 +192,13 @@ export default function PaymentSuccessPage() {
         </Button>
       </div>
     </div>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-cyber-dark flex items-center justify-center"><p className="text-white">로딩 중...</p></div>}>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }

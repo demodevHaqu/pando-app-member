@@ -1,12 +1,45 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { PoseDetectionResult, PoseLandmark, POSE_LANDMARKS } from '@/types/pose-tracking';
+import {
+  analyzePose,
+  PoseAnalysisResult,
+  EXERCISE_FORMS,
+} from '@/lib/pose-analyzer';
 
-export interface PoseLandmark {
-  x: number;
-  y: number;
-  z: number;
-  visibility: number;
+export { POSE_LANDMARKS };
+export type { PoseLandmark };
+
+// MediaPipe types
+interface MediaPipePoseResults {
+  poseLandmarks?: Array<{
+    x: number;
+    y: number;
+    z: number;
+    visibility: number;
+  }>;
+  poseWorldLandmarks?: Array<{
+    x: number;
+    y: number;
+    z: number;
+    visibility: number;
+  }>;
+}
+
+interface MediaPipePose {
+  setOptions: (options: {
+    modelComplexity?: number;
+    smoothLandmarks?: boolean;
+    enableSegmentation?: boolean;
+    smoothSegmentation?: boolean;
+    minDetectionConfidence?: number;
+    minTrackingConfidence?: number;
+  }) => void;
+  onResults: (callback: (results: MediaPipePoseResults) => void) => void;
+  initialize: () => Promise<void>;
+  send: (input: { image: HTMLVideoElement }) => Promise<void>;
+  close: () => void;
 }
 
 export interface PoseResults {
@@ -14,45 +47,11 @@ export interface PoseResults {
   timestamp: number;
 }
 
-// MediaPipe Pose Landmark indices
-export const POSE_LANDMARKS = {
-  NOSE: 0,
-  LEFT_EYE_INNER: 1,
-  LEFT_EYE: 2,
-  LEFT_EYE_OUTER: 3,
-  RIGHT_EYE_INNER: 4,
-  RIGHT_EYE: 5,
-  RIGHT_EYE_OUTER: 6,
-  LEFT_EAR: 7,
-  RIGHT_EAR: 8,
-  MOUTH_LEFT: 9,
-  MOUTH_RIGHT: 10,
-  LEFT_SHOULDER: 11,
-  RIGHT_SHOULDER: 12,
-  LEFT_ELBOW: 13,
-  RIGHT_ELBOW: 14,
-  LEFT_WRIST: 15,
-  RIGHT_WRIST: 16,
-  LEFT_PINKY: 17,
-  RIGHT_PINKY: 18,
-  LEFT_INDEX: 19,
-  RIGHT_INDEX: 20,
-  LEFT_THUMB: 21,
-  RIGHT_THUMB: 22,
-  LEFT_HIP: 23,
-  RIGHT_HIP: 24,
-  LEFT_KNEE: 25,
-  RIGHT_KNEE: 26,
-  LEFT_ANKLE: 27,
-  RIGHT_ANKLE: 28,
-  LEFT_HEEL: 29,
-  RIGHT_HEEL: 30,
-  LEFT_FOOT_INDEX: 31,
-  RIGHT_FOOT_INDEX: 32,
-} as const;
-
 interface UsePoseTrackingOptions {
+  exerciseName?: string;
   onPoseDetected?: (results: PoseResults) => void;
+  onAnalysisResult?: (result: PoseAnalysisResult) => void;
+  onRepComplete?: (repCount: number) => void;
   onError?: (error: string) => void;
   modelComplexity?: 0 | 1 | 2;
   smoothLandmarks?: boolean;
@@ -65,10 +64,15 @@ interface UsePoseTrackingReturn {
   isTracking: boolean;
   error: string | null;
   currentPose: PoseResults | null;
+  analysisResult: PoseAnalysisResult | null;
+  repCount: number;
+  formScore: number;
   videoRef: React.RefObject<HTMLVideoElement | null>;
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
   startTracking: () => Promise<void>;
   stopTracking: () => void;
+  resetRepCount: () => void;
+  setExercise: (name: string) => void;
   calculateAngle: (
     landmark1: PoseLandmark,
     landmark2: PoseLandmark,
@@ -81,24 +85,28 @@ export default function usePoseTracking(
   options: UsePoseTrackingOptions = {}
 ): UsePoseTrackingReturn {
   const {
+    exerciseName = 'squat',
     onPoseDetected,
+    onAnalysisResult,
+    onRepComplete,
     onError,
-    modelComplexity = 1,
-    smoothLandmarks = true,
-    minDetectionConfidence = 0.5,
-    minTrackingConfidence = 0.5,
   } = options;
 
   const [isLoading, setIsLoading] = useState(false);
   const [isTracking, setIsTracking] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPose, setCurrentPose] = useState<PoseResults | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<PoseAnalysisResult | null>(null);
+  const [repCount, setRepCount] = useState(0);
+  const [formScore, setFormScore] = useState(100);
+  const [currentExercise, setCurrentExercise] = useState(exerciseName);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const animationFrameRef = useRef<number | null>(null);
-  const poseRef = useRef<any>(null);
+  const poseRef = useRef<MediaPipePose | null>(null);
+  const previousPhaseRef = useRef<'idle' | 'descending' | 'bottom' | 'ascending'>('idle');
+  const scoreHistoryRef = useRef<number[]>([]);
 
   // Calculate angle between three points
   const calculateAngle = useCallback(
@@ -131,50 +139,130 @@ export default function usePoseTracking(
     [currentPose]
   );
 
-  // Process video frame (simplified - in production use MediaPipe)
-  const processFrame = useCallback(() => {
-    if (!videoRef.current || !canvasRef.current || !isTracking) return;
-
-    const ctx = canvasRef.current.getContext('2d');
-    if (!ctx) return;
-
-    // Draw video frame
-    ctx.drawImage(
-      videoRef.current,
-      0,
-      0,
-      canvasRef.current.width,
-      canvasRef.current.height
-    );
-
-    // In production, MediaPipe would process here and return landmarks
-    // For demo, we'll simulate pose detection
-    if (Math.random() > 0.8) {
-      // Simulate detected pose
-      const mockPose: PoseResults = {
-        poseLandmarks: Array(33)
-          .fill(null)
-          .map(() => ({
-            x: Math.random(),
-            y: Math.random(),
-            z: Math.random() * 0.1,
-            visibility: 0.9 + Math.random() * 0.1,
-          })),
+  // Handle pose detection result
+  const handlePoseDetected = useCallback(
+    (pose: PoseDetectionResult) => {
+      const poseResults: PoseResults = {
+        poseLandmarks: pose.landmarks,
         timestamp: Date.now(),
       };
 
-      setCurrentPose(mockPose);
-      onPoseDetected?.(mockPose);
+      setCurrentPose(poseResults);
+      onPoseDetected?.(poseResults);
+
+      // Get exercise form requirements
+      const exerciseForm = EXERCISE_FORMS[currentExercise.toLowerCase()];
+      if (!exerciseForm) return;
+
+      // Analyze pose
+      const result = analyzePose(pose, exerciseForm, previousPhaseRef.current);
+      setAnalysisResult(result);
+      onAnalysisResult?.(result);
+
+      // Track score
+      scoreHistoryRef.current.push(result.score);
+      if (scoreHistoryRef.current.length > 30) {
+        scoreHistoryRef.current.shift();
+      }
+
+      // Calculate average score
+      const avgScore = Math.round(
+        scoreHistoryRef.current.reduce((a, b) => a + b, 0) / scoreHistoryRef.current.length
+      );
+      setFormScore(avgScore);
+
+      // Track rep completion
+      if (result.repCompleted) {
+        setRepCount((prev) => {
+          const newCount = prev + 1;
+          onRepComplete?.(newCount);
+          return newCount;
+        });
+      }
+
+      // Update phase
+      previousPhaseRef.current = result.phase;
+    },
+    [currentExercise, onPoseDetected, onAnalysisResult, onRepComplete]
+  );
+
+  // Load MediaPipe
+  const loadMediaPipe = useCallback(async () => {
+    try {
+      const { Pose } = await import('@mediapipe/pose');
+
+      const pose = new Pose({
+        locateFile: (file: string) => {
+          return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+        },
+      }) as unknown as MediaPipePose;
+
+      pose.setOptions({
+        modelComplexity: 1,
+        smoothLandmarks: true,
+        enableSegmentation: false,
+        smoothSegmentation: false,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5,
+      });
+
+      pose.onResults((results: MediaPipePoseResults) => {
+        if (results.poseLandmarks) {
+          const landmarks: PoseLandmark[] = results.poseLandmarks.map((lm) => ({
+            x: lm.x,
+            y: lm.y,
+            z: lm.z,
+            visibility: lm.visibility,
+          }));
+
+          const worldLandmarks = results.poseWorldLandmarks?.map((lm) => ({
+            x: lm.x,
+            y: lm.y,
+            z: lm.z,
+            visibility: lm.visibility,
+          }));
+
+          handlePoseDetected({
+            landmarks,
+            worldLandmarks,
+          });
+        }
+      });
+
+      await pose.initialize();
+      poseRef.current = pose;
+      return pose;
+    } catch (err) {
+      console.error('MediaPipe 로딩 실패:', err);
+      throw new Error('모션 분석 모델을 로드할 수 없습니다');
+    }
+  }, [handlePoseDetected]);
+
+  // Process video frame
+  const processFrame = useCallback(async () => {
+    if (!poseRef.current || !videoRef.current || !isTracking) return;
+
+    try {
+      await poseRef.current.send({ image: videoRef.current });
+    } catch (err) {
+      console.error('프레임 처리 오류:', err);
     }
 
-    animationFrameRef.current = requestAnimationFrame(processFrame);
-  }, [isTracking, onPoseDetected]);
+    if (isTracking) {
+      requestAnimationFrame(processFrame);
+    }
+  }, [isTracking]);
 
   // Start tracking
   const startTracking = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
+
+      // Load MediaPipe if not loaded
+      if (!poseRef.current) {
+        await loadMediaPipe();
+      }
 
       // Request camera access
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -201,7 +289,7 @@ export default function usePoseTracking(
       setIsTracking(true);
 
       // Start processing frames
-      animationFrameRef.current = requestAnimationFrame(processFrame);
+      requestAnimationFrame(processFrame);
     } catch (err) {
       const message = err instanceof Error ? err.message : '카메라 접근 실패';
       setError(message);
@@ -209,28 +297,48 @@ export default function usePoseTracking(
     } finally {
       setIsLoading(false);
     }
-  }, [processFrame, onError]);
+  }, [loadMediaPipe, processFrame, onError]);
 
   // Stop tracking
   const stopTracking = useCallback(() => {
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
-      animationFrameRef.current = null;
-    }
+    setIsTracking(false);
 
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
 
-    setIsTracking(false);
     setCurrentPose(null);
   }, []);
+
+  // Reset rep count
+  const resetRepCount = useCallback(() => {
+    setRepCount(0);
+    previousPhaseRef.current = 'idle';
+    scoreHistoryRef.current = [];
+    setFormScore(100);
+  }, []);
+
+  // Set exercise
+  const setExercise = useCallback((name: string) => {
+    setCurrentExercise(name);
+    resetRepCount();
+  }, [resetRepCount]);
+
+  // Start frame processing when tracking
+  useEffect(() => {
+    if (isTracking && poseRef.current) {
+      processFrame();
+    }
+  }, [isTracking, processFrame]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       stopTracking();
+      if (poseRef.current) {
+        poseRef.current.close();
+      }
     };
   }, [stopTracking]);
 
@@ -239,10 +347,15 @@ export default function usePoseTracking(
     isTracking,
     error,
     currentPose,
+    analysisResult,
+    repCount,
+    formScore,
     videoRef,
     canvasRef,
     startTracking,
     stopTracking,
+    resetRepCount,
+    setExercise,
     calculateAngle,
     getLandmark,
   };

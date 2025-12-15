@@ -67,7 +67,7 @@ export default function FeedPage() {
 
   return (
     <div className="min-h-screen bg-cyber-dark">
-      <Header title="피드" showBack={false} />
+      <Header title="피드" showBack={false} showLogo={true} />
 
       <div className="px-4 sm:px-6 lg:px-8 py-4 space-y-4 pb-20 max-w-2xl mx-auto">
         {/* Quick Actions */}

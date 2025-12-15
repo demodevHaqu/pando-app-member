@@ -4,10 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Header from '@/components/layout/Header';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
-import Tabs from '@/components/ui/Tabs';
 import { Calendar, Clock, MapPin, TrendingUp, Award, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Mock 방문 기록 데이터
@@ -64,6 +61,86 @@ const MONTHLY_STATS = {
   mostActivity: '웨이트 트레이닝',
 };
 
+// Card Component
+const Card = ({
+  children,
+  variant = 'default',
+  glow = false,
+  style = {},
+}: {
+  children: React.ReactNode;
+  variant?: 'default' | 'hologram' | 'glass';
+  glow?: boolean;
+  style?: React.CSSProperties;
+}) => {
+  const baseStyle: React.CSSProperties = {
+    background: variant === 'hologram'
+      ? 'linear-gradient(145deg, rgba(26, 26, 36, 0.95), rgba(13, 13, 18, 0.98))'
+      : variant === 'glass'
+      ? 'rgba(255, 255, 255, 0.05)'
+      : 'linear-gradient(145deg, rgba(26, 26, 36, 0.95), rgba(13, 13, 18, 0.98))',
+    border: variant === 'hologram'
+      ? '1px solid rgba(0, 217, 255, 0.3)'
+      : '1px solid rgba(255, 255, 255, 0.1)',
+    borderRadius: '16px',
+    padding: '16px',
+    backdropFilter: 'blur(20px)',
+    boxShadow: glow
+      ? '0 0 20px rgba(0, 217, 255, 0.2)'
+      : '0 4px 24px rgba(0, 0, 0, 0.4)',
+    ...style,
+  };
+
+  return <div style={baseStyle}>{children}</div>;
+};
+
+// Tabs Component
+const Tabs = ({
+  tabs,
+  activeTab,
+  onChange,
+}: {
+  tabs: { id: string; label: string; content: React.ReactNode }[];
+  activeTab?: string;
+  onChange?: (id: string) => void;
+}) => {
+  const [internalActive, setInternalActive] = useState(tabs[0]?.id || '');
+  const currentTab = activeTab || internalActive;
+  const handleChange = onChange || setInternalActive;
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => handleChange(tab.id)}
+            style={{
+              flex: 1,
+              padding: '12px 16px',
+              borderRadius: '12px',
+              border: 'none',
+              background: currentTab === tab.id
+                ? 'linear-gradient(135deg, #00D9FF, #7209B7)'
+                : 'rgba(255, 255, 255, 0.05)',
+              color: currentTab === tab.id ? 'white' : '#9CA3AF',
+              fontWeight: 600,
+              fontSize: '14px',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+      <div>
+        {tabs.find((tab) => tab.id === currentTab)?.content}
+      </div>
+    </div>
+  );
+};
+
 export default function VisitHistoryPage() {
   const router = useRouter();
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -98,7 +175,7 @@ export default function VisitHistoryPage() {
       id: 'history',
       label: '방문 기록',
       content: (
-        <div className="space-y-3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {MOCK_VISIT_HISTORY.map((visit, idx) => {
             const { month, day, dayName } = formatDate(visit.date);
             return (
@@ -109,29 +186,35 @@ export default function VisitHistoryPage() {
                 transition={{ delay: idx * 0.05 }}
               >
                 <Card>
-                  <div className="flex gap-4">
+                  <div style={{ display: 'flex', gap: '16px' }}>
                     {/* 날짜 */}
-                    <div className="flex-shrink-0 w-14 text-center">
-                      <div className="text-sm text-gray-400">{month}월</div>
-                      <div className="text-2xl font-bold text-white">{day}</div>
-                      <div className="text-xs text-gray-500">{dayName}요일</div>
+                    <div style={{ flexShrink: 0, width: '56px', textAlign: 'center' }}>
+                      <div style={{ fontSize: '14px', color: '#9CA3AF' }}>{month}월</div>
+                      <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white' }}>{day}</div>
+                      <div style={{ fontSize: '12px', color: '#6B7280' }}>{dayName}요일</div>
                     </div>
 
                     {/* 세부 정보 */}
-                    <div className="flex-1 border-l border-white/10 pl-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Clock size={14} className="text-electric-blue" />
-                        <span className="text-white">
+                    <div style={{ flex: 1, borderLeft: '1px solid rgba(255, 255, 255, 0.1)', paddingLeft: '16px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <Clock size={14} color="#00D9FF" />
+                        <span style={{ color: 'white' }}>
                           {visit.checkIn} - {visit.checkOut}
                         </span>
                         <Badge type="growth">{formatDuration(visit.duration)}</Badge>
                       </div>
 
-                      <div className="flex flex-wrap gap-2">
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                         {visit.activities.map((activity, i) => (
                           <span
                             key={i}
-                            className="px-2 py-1 bg-cyber-mid text-gray-300 rounded text-xs"
+                            style={{
+                              padding: '4px 8px',
+                              background: '#1A1A24',
+                              color: '#D1D5DB',
+                              borderRadius: '4px',
+                              fontSize: '12px',
+                            }}
                           >
                             {activity}
                           </span>
@@ -150,39 +233,51 @@ export default function VisitHistoryPage() {
       id: 'calendar',
       label: '캘린더',
       content: (
-        <div className="space-y-4">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {/* 월 선택 */}
-          <div className="flex items-center justify-between">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <button
               onClick={() => changeMonth(-1)}
-              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              style={{
+                padding: '8px',
+                background: 'transparent',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+              }}
             >
-              <ChevronLeft size={24} className="text-gray-400" />
+              <ChevronLeft size={24} color="#9CA3AF" />
             </button>
-            <h3 className="text-xl font-bold text-white">
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: 'white' }}>
               {currentMonth.getFullYear()}년 {currentMonth.getMonth() + 1}월
             </h3>
             <button
               onClick={() => changeMonth(1)}
-              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              style={{
+                padding: '8px',
+                background: 'transparent',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+              }}
             >
-              <ChevronRight size={24} className="text-gray-400" />
+              <ChevronRight size={24} color="#9CA3AF" />
             </button>
           </div>
 
           {/* 캘린더 그리드 */}
           <Card>
             {/* 요일 헤더 */}
-            <div className="grid grid-cols-7 gap-1 mb-2">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '8px' }}>
               {['일', '월', '화', '수', '목', '금', '토'].map((day) => (
-                <div key={day} className="text-center text-xs text-gray-500 py-2">
+                <div key={day} style={{ textAlign: 'center', fontSize: '12px', color: '#6B7280', padding: '8px' }}>
                   {day}
                 </div>
               ))}
             </div>
 
-            {/* 날짜 그리드 (간단한 표시) */}
-            <div className="grid grid-cols-7 gap-1">
+            {/* 날짜 그리드 */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
               {Array.from({ length: 35 }, (_, i) => {
                 const dayNum = i - new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay() + 1;
                 const isCurrentMonth = dayNum > 0 && dayNum <= new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
@@ -192,11 +287,17 @@ export default function VisitHistoryPage() {
                 return (
                   <div
                     key={i}
-                    className={`aspect-square flex items-center justify-center rounded-lg text-sm ${
-                      isCurrentMonth ? 'text-white' : 'text-gray-700'
-                    } ${hasVisit ? 'bg-gradient-energy' : ''} ${
-                      isToday && !hasVisit ? 'ring-2 ring-electric-blue' : ''
-                    }`}
+                    style={{
+                      aspectRatio: '1',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      color: isCurrentMonth ? 'white' : '#374151',
+                      background: hasVisit ? 'linear-gradient(135deg, #FF6B35, #FF006E)' : 'transparent',
+                      border: isToday && !hasVisit ? '2px solid #00D9FF' : 'none',
+                    }}
                   >
                     {isCurrentMonth ? dayNum : ''}
                   </div>
@@ -205,14 +306,14 @@ export default function VisitHistoryPage() {
             </div>
 
             {/* 범례 */}
-            <div className="flex items-center gap-4 mt-4 pt-4 border-t border-white/10">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-gradient-energy rounded" />
-                <span className="text-xs text-gray-400">운동한 날</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '16px', height: '16px', background: 'linear-gradient(135deg, #FF6B35, #FF006E)', borderRadius: '4px' }} />
+                <span style={{ fontSize: '12px', color: '#9CA3AF' }}>운동한 날</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-electric-blue rounded" />
-                <span className="text-xs text-gray-400">오늘</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '16px', height: '16px', border: '2px solid #00D9FF', borderRadius: '4px' }} />
+                <span style={{ fontSize: '12px', color: '#9CA3AF' }}>오늘</span>
               </div>
             </div>
           </Card>
@@ -222,49 +323,49 @@ export default function VisitHistoryPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-cyber-dark pb-20">
-      <Header title="방문 기록" showBack={true} showNotification={false} />
+    <div style={{ minHeight: '100vh', background: '#0D0D12', paddingBottom: '80px' }}>
+      <Header title="방문 기록" showBack={true} showLogo={true} showNotification={false} />
 
-      <div className="p-4 space-y-6">
+      <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {/* 이번 달 통계 */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <Card variant="hologram">
-            <h3 className="font-bold text-white mb-4">이번 달 운동 현황</h3>
+            <h3 style={{ fontWeight: 'bold', color: 'white', marginBottom: '16px' }}>이번 달 운동 현황</h3>
 
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              <div className="p-3 glass-dark rounded-lg text-center">
-                <Calendar size={24} className="text-electric-blue mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">{MONTHLY_STATS.totalVisits}</div>
-                <div className="text-xs text-gray-400">방문 횟수</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '16px' }}>
+              <div style={{ padding: '12px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px', textAlign: 'center' }}>
+                <Calendar size={24} color="#00D9FF" style={{ margin: '0 auto 8px' }} />
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white' }}>{MONTHLY_STATS.totalVisits}</div>
+                <div style={{ fontSize: '12px', color: '#9CA3AF' }}>방문 횟수</div>
               </div>
-              <div className="p-3 glass-dark rounded-lg text-center">
-                <Clock size={24} className="text-neon-green mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">
+              <div style={{ padding: '12px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px', textAlign: 'center' }}>
+                <Clock size={24} color="#39FF14" style={{ margin: '0 auto 8px' }} />
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white' }}>
                   {Math.floor(MONTHLY_STATS.totalDuration / 60)}시간
                 </div>
-                <div className="text-xs text-gray-400">총 운동 시간</div>
+                <div style={{ fontSize: '12px', color: '#9CA3AF' }}>총 운동 시간</div>
               </div>
-              <div className="p-3 glass-dark rounded-lg text-center">
-                <TrendingUp size={24} className="text-energy-orange mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">{MONTHLY_STATS.avgDuration}분</div>
-                <div className="text-xs text-gray-400">평균 운동 시간</div>
+              <div style={{ padding: '12px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px', textAlign: 'center' }}>
+                <TrendingUp size={24} color="#FF6B35" style={{ margin: '0 auto 8px' }} />
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white' }}>{MONTHLY_STATS.avgDuration}분</div>
+                <div style={{ fontSize: '12px', color: '#9CA3AF' }}>평균 운동 시간</div>
               </div>
-              <div className="p-3 glass-dark rounded-lg text-center">
-                <Award size={24} className="text-cyber-yellow mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">{MONTHLY_STATS.streak}일</div>
-                <div className="text-xs text-gray-400">연속 출석</div>
+              <div style={{ padding: '12px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px', textAlign: 'center' }}>
+                <Award size={24} color="#FFD60A" style={{ margin: '0 auto 8px' }} />
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white' }}>{MONTHLY_STATS.streak}일</div>
+                <div style={{ fontSize: '12px', color: '#9CA3AF' }}>연속 출석</div>
               </div>
             </div>
 
             {/* 추가 정보 */}
-            <div className="space-y-2 pt-3 border-t border-white/10">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-400">선호 시간대</span>
-                <span className="text-white">{MONTHLY_STATS.favoriteTime}</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                <span style={{ color: '#9CA3AF' }}>선호 시간대</span>
+                <span style={{ color: 'white' }}>{MONTHLY_STATS.favoriteTime}</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-400">가장 많이 한 운동</span>
-                <span className="text-white">{MONTHLY_STATS.mostActivity}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                <span style={{ color: '#9CA3AF' }}>가장 많이 한 운동</span>
+                <span style={{ color: 'white' }}>{MONTHLY_STATS.mostActivity}</span>
               </div>
             </div>
           </Card>

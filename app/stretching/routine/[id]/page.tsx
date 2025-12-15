@@ -139,7 +139,7 @@ export default function StretchingRoutineDetailPage() {
 
   return (
     <div className="min-h-screen bg-cyber-dark pb-24">
-      <Header title={MOCK_ROUTINE.name} showBack={true} showNotification={false} />
+      <Header title={MOCK_ROUTINE.name} showBack={true} showLogo={true} showNotification={false} />
 
       <div className="p-4 space-y-6">
         {/* 비디오 플레이어 */}

@@ -8,6 +8,7 @@
   "orientation": "portrait",
   "background_color": "#0D0D12",
   "theme_color": "#00D9FF",
+  "permissions": ["camera", "microphone", "geolocation"],
   "icons": [
     {
       "src": "/icons/icon-72x72.png",

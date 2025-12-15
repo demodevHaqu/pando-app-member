@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Button from '@/components/ui/Button';
 import { Download, X, Share, Plus } from 'lucide-react';
+import { PrimaryButton, SecondaryButton } from '@/components/ui/ModernUI';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -112,7 +112,15 @@ export default function PWAInstall() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 bg-black/80 flex items-end justify-center"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 50,
+            background: 'rgba(0, 0, 0, 0.8)',
+            display: 'flex',
+            alignItems: 'flex-end',
+            justifyContent: 'center',
+          }}
           onClick={handleDismiss}
         >
           <motion.div
@@ -120,67 +128,124 @@ export default function PWAInstall() {
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 25 }}
-            className="w-full max-w-[425px] bg-cyber-mid rounded-t-3xl p-6"
+            style={{
+              width: '100%',
+              maxWidth: '425px',
+              background: '#1A1A24',
+              borderRadius: '24px 24px 0 0',
+              padding: '24px',
+            }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-white">홈 화면에 추가하기</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: 'white' }}>홈 화면에 추가하기</h3>
               <button
                 onClick={handleDismiss}
-                className="p-2 text-gray-400 hover:text-white"
+                style={{
+                  padding: '8px',
+                  color: '#9CA3AF',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
               >
                 <X size={24} />
               </button>
             </div>
 
-            <div className="space-y-6">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               {/* Step 1 */}
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-electric-blue/20 flex items-center justify-center shrink-0">
-                  <span className="text-electric-blue font-bold">1</span>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                <div style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  background: 'rgba(0, 217, 255, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}>
+                  <span style={{ color: '#00D9FF', fontWeight: 'bold' }}>1</span>
                 </div>
                 <div>
-                  <p className="text-white font-medium mb-2">
+                  <p style={{ color: 'white', fontWeight: '500', marginBottom: '8px' }}>
                     Safari 하단의 공유 버튼을 탭하세요
                   </p>
-                  <div className="bg-cyber-dark p-3 rounded-lg inline-flex items-center gap-2">
-                    <Share size={24} className="text-electric-blue" />
-                    <span className="text-sm text-gray-400">공유</span>
+                  <div style={{
+                    background: '#0D0D12',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}>
+                    <Share size={24} color="#00D9FF" />
+                    <span style={{ fontSize: '14px', color: '#9CA3AF' }}>공유</span>
                   </div>
                 </div>
               </div>
 
               {/* Step 2 */}
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-electric-blue/20 flex items-center justify-center shrink-0">
-                  <span className="text-electric-blue font-bold">2</span>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                <div style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  background: 'rgba(0, 217, 255, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}>
+                  <span style={{ color: '#00D9FF', fontWeight: 'bold' }}>2</span>
                 </div>
                 <div>
-                  <p className="text-white font-medium mb-2">
+                  <p style={{ color: 'white', fontWeight: '500', marginBottom: '8px' }}>
                     스크롤하여 &quot;홈 화면에 추가&quot;를 선택하세요
                   </p>
-                  <div className="bg-cyber-dark p-3 rounded-lg inline-flex items-center gap-2">
-                    <Plus size={24} className="text-electric-blue" />
-                    <span className="text-sm text-gray-400">홈 화면에 추가</span>
+                  <div style={{
+                    background: '#0D0D12',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}>
+                    <Plus size={24} color="#00D9FF" />
+                    <span style={{ fontSize: '14px', color: '#9CA3AF' }}>홈 화면에 추가</span>
                   </div>
                 </div>
               </div>
 
               {/* Step 3 */}
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-electric-blue/20 flex items-center justify-center shrink-0">
-                  <span className="text-electric-blue font-bold">3</span>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                <div style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  background: 'rgba(0, 217, 255, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}>
+                  <span style={{ color: '#00D9FF', fontWeight: 'bold' }}>3</span>
                 </div>
                 <div>
-                  <p className="text-white font-medium">
+                  <p style={{ color: 'white', fontWeight: '500' }}>
                     우측 상단의 &quot;추가&quot; 버튼을 탭하세요
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 pt-4 border-t border-white/10">
-              <p className="text-sm text-gray-400 text-center">
+            <div style={{
+              marginTop: '32px',
+              paddingTop: '16px',
+              borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            }}>
+              <p style={{ fontSize: '14px', color: '#9CA3AF', textAlign: 'center' }}>
                 앱처럼 전체 화면으로 PANDO를 이용할 수 있어요
               </p>
             </div>
@@ -194,41 +259,78 @@ export default function PWAInstall() {
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
-          className="fixed bottom-20 left-4 right-4 z-50 max-w-[425px] mx-auto"
+          style={{
+            position: 'fixed',
+            bottom: '80px',
+            left: '16px',
+            right: '16px',
+            zIndex: 50,
+            maxWidth: '425px',
+            margin: '0 auto',
+          }}
         >
-          <div className="bg-gradient-to-r from-energy-orange to-electric-blue p-4 rounded-xl shadow-lg backdrop-blur-sm">
-            <div className="flex items-start gap-3">
-              <Download size={24} className="text-white shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <h3 className="font-bold text-white mb-1">앱 설치하기</h3>
-                <p className="text-sm text-white/90 mb-3">
+          <div style={{
+            background: 'linear-gradient(135deg, #FF6B35, #00D9FF)',
+            padding: '16px',
+            borderRadius: '16px',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+              <Download size={24} color="white" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <div style={{ flex: 1 }}>
+                <h3 style={{ fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>앱 설치하기</h3>
+                <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.9)', marginBottom: '12px' }}>
                   {isIOS
                     ? '홈 화면에 추가하고 앱처럼 사용하세요!'
                     : '홈 화면에 추가하고 더 빠르게 이용하세요!'}
                 </p>
-                <div className="flex gap-2">
+                <div style={{ display: 'flex', gap: '8px' }}>
                   {isIOS ? (
-                    <Button
-                      variant="energy"
-                      size="sm"
+                    <button
                       onClick={() => setShowIOSGuide(true)}
-                      className="flex-1 bg-white text-energy-orange hover:bg-white/90"
+                      style={{
+                        flex: 1,
+                        padding: '10px 16px',
+                        background: 'white',
+                        color: '#FF6B35',
+                        fontWeight: 'bold',
+                        fontSize: '14px',
+                        borderRadius: '10px',
+                        border: 'none',
+                        cursor: 'pointer',
+                      }}
                     >
                       설치 방법 보기
-                    </Button>
+                    </button>
                   ) : (
-                    <Button
-                      variant="energy"
-                      size="sm"
+                    <button
                       onClick={handleInstall}
-                      className="flex-1 bg-white text-energy-orange hover:bg-white/90"
+                      style={{
+                        flex: 1,
+                        padding: '10px 16px',
+                        background: 'white',
+                        color: '#FF6B35',
+                        fontWeight: 'bold',
+                        fontSize: '14px',
+                        borderRadius: '10px',
+                        border: 'none',
+                        cursor: 'pointer',
+                      }}
                     >
                       설치
-                    </Button>
+                    </button>
                   )}
                   <button
                     onClick={handleDismiss}
-                    className="px-3 py-2 text-white hover:bg-white/20 rounded-lg transition-colors text-sm"
+                    style={{
+                      padding: '8px 12px',
+                      color: 'white',
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      border: 'none',
+                      borderRadius: '10px',
+                      cursor: 'pointer',
+                      transition: 'background 0.2s',
+                    }}
                   >
                     <X size={20} />
                   </button>

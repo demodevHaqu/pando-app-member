@@ -5,41 +5,76 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNotificationStore } from '@/store/notificationStore';
 import { CheckCircle, AlertCircle, Info, X } from 'lucide-react';
 
+// Color definitions
+const COLORS = {
+  neonGreen: '#39FF14',
+  powerPink: '#FF006E',
+  cyberYellow: '#FFD60A',
+  electricBlue: '#00D9FF',
+  cyberMid: '#1A1A24',
+};
+
 export default function Toast() {
   const { notifications, removeNotification } = useNotificationStore();
 
-  const getIcon = (type: string) => {
+  const getIconColor = (type: string) => {
     switch (type) {
       case 'success':
-        return <CheckCircle size={20} className="text-neon-green" />;
+        return COLORS.neonGreen;
       case 'error':
-        return <AlertCircle size={20} className="text-power-pink" />;
+        return COLORS.powerPink;
       case 'warning':
-        return <AlertCircle size={20} className="text-cyber-yellow" />;
+        return COLORS.cyberYellow;
       case 'info':
-        return <Info size={20} className="text-electric-blue" />;
+        return COLORS.electricBlue;
       default:
-        return <Info size={20} />;
+        return '#FFFFFF';
     }
   };
 
-  const getBackground = (type: string) => {
+  const getBackgroundStyle = (type: string): React.CSSProperties => {
     switch (type) {
       case 'success':
-        return 'bg-neon-green/10 border-neon-green/50';
+        return {
+          background: 'rgba(57, 255, 20, 0.1)',
+          borderColor: 'rgba(57, 255, 20, 0.5)',
+        };
       case 'error':
-        return 'bg-power-pink/10 border-power-pink/50';
+        return {
+          background: 'rgba(255, 0, 110, 0.1)',
+          borderColor: 'rgba(255, 0, 110, 0.5)',
+        };
       case 'warning':
-        return 'bg-cyber-yellow/10 border-cyber-yellow/50';
+        return {
+          background: 'rgba(255, 214, 10, 0.1)',
+          borderColor: 'rgba(255, 214, 10, 0.5)',
+        };
       case 'info':
-        return 'bg-electric-blue/10 border-electric-blue/50';
+        return {
+          background: 'rgba(0, 217, 255, 0.1)',
+          borderColor: 'rgba(0, 217, 255, 0.5)',
+        };
       default:
-        return 'bg-cyber-mid border-white/10';
+        return {
+          background: COLORS.cyberMid,
+          borderColor: 'rgba(255, 255, 255, 0.1)',
+        };
     }
   };
 
   return (
-    <div className="fixed top-20 right-4 z-50 space-y-2 max-w-sm">
+    <div
+      style={{
+        position: 'fixed',
+        top: '80px',
+        right: '16px',
+        zIndex: 50,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+        maxWidth: '320px',
+      }}
+    >
       <AnimatePresence>
         {notifications.map((notification) => (
           <motion.div
@@ -47,19 +82,72 @@ export default function Toast() {
             initial={{ opacity: 0, x: 100 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 100 }}
-            className={`p-4 rounded-lg backdrop-blur-sm border ${getBackground(
-              notification.type
-            )} shadow-lg`}
+            style={{
+              padding: '16px',
+              borderRadius: '12px',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              border: '1px solid',
+              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)',
+              ...getBackgroundStyle(notification.type),
+            }}
           >
-            <div className="flex items-start gap-3">
-              {getIcon(notification.type)}
-              <div className="flex-1 min-w-0">
-                <div className="font-bold text-white mb-1">{notification.title}</div>
-                <div className="text-sm text-gray-300">{notification.message}</div>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '12px',
+              }}
+            >
+              {notification.type === 'success' && (
+                <CheckCircle size={20} color={getIconColor(notification.type)} />
+              )}
+              {notification.type === 'error' && (
+                <AlertCircle size={20} color={getIconColor(notification.type)} />
+              )}
+              {notification.type === 'warning' && (
+                <AlertCircle size={20} color={getIconColor(notification.type)} />
+              )}
+              {notification.type === 'info' && (
+                <Info size={20} color={getIconColor(notification.type)} />
+              )}
+              {!['success', 'error', 'warning', 'info'].includes(notification.type) && (
+                <Info size={20} color={getIconColor(notification.type)} />
+              )}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div
+                  style={{
+                    fontWeight: 'bold',
+                    color: 'white',
+                    marginBottom: '4px',
+                    fontSize: '14px',
+                  }}
+                >
+                  {notification.title}
+                </div>
+                <div
+                  style={{
+                    fontSize: '13px',
+                    color: '#D1D5DB',
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {notification.message}
+                </div>
               </div>
               <button
                 onClick={() => removeNotification(notification.id)}
-                className="text-gray-400 hover:text-white transition-colors flex-shrink-0"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#9CA3AF',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  flexShrink: 0,
+                  transition: 'color 0.2s',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = 'white')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = '#9CA3AF')}
               >
                 <X size={16} />
               </button>
