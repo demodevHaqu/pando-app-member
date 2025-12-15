@@ -1455,7 +1455,7 @@ export default function HomePage() {
                       fontWeight: 'bold',
                     }}>
                       {(() => {
-                        const daysLeft = Math.ceil((new Date(member.membershipExpiry).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+                        const daysLeft = Math.ceil((new Date(member.membershipEndDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
                         return daysLeft > 0 ? `${daysLeft}일 남음` : '갱신 필요';
                       })()}
                     </span>

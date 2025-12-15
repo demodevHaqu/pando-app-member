@@ -12,6 +12,8 @@ interface BadgeProps {
   pulse?: boolean;
   icon?: React.ReactNode;
   children: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 export default function Badge({
@@ -22,6 +24,8 @@ export default function Badge({
   pulse = false,
   icon,
   children,
+  className,
+  style: customStyle,
 }: BadgeProps) {
   // Support both 'variant' and 'type' props for backwards compatibility
   const resolvedVariant = variant || type || 'energy';
@@ -106,6 +110,7 @@ export default function Badge({
     <motion.span
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
+      className={className}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -119,6 +124,7 @@ export default function Badge({
         ...getSizeStyle(),
         ...getGlowStyle(),
         ...(pulse ? { animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' } : {}),
+        ...customStyle,
       }}
     >
       {icon && <span style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>{icon}</span>}
@@ -132,12 +138,14 @@ interface StatusBadgeProps {
   status: 'online' | 'offline' | 'busy' | 'away';
   label?: string;
   showDot?: boolean;
+  className?: string;
 }
 
 export function StatusBadge({
   status,
   label,
   showDot = true,
+  className,
 }: StatusBadgeProps) {
   const statusConfig = {
     online: { color: '#39FF14', text: '온라인', glow: '0 0 10px rgba(57, 255, 20, 0.5)' },
@@ -149,7 +157,7 @@ export function StatusBadge({
   const config = statusConfig[status];
 
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+    <div className={className} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
       {showDot && (
         <span style={{
           width: '8px',
@@ -172,12 +180,14 @@ interface CountBadgeProps {
   count: number;
   max?: number;
   color?: 'orange' | 'blue' | 'pink' | 'green';
+  className?: string;
 }
 
 export function CountBadge({
   count,
   max = 99,
   color = 'pink',
+  className,
 }: CountBadgeProps) {
   const displayCount = count > max ? `${max}+` : count;
 
@@ -194,6 +204,7 @@ export function CountBadge({
     <motion.span
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
+      className={className}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -218,12 +229,14 @@ interface LevelBadgeProps {
   level: number;
   maxLevel?: number;
   label?: string;
+  className?: string;
 }
 
 export function LevelBadge({
   level,
   maxLevel = 5,
   label,
+  className,
 }: LevelBadgeProps) {
   const getColor = () => {
     const ratio = level / maxLevel;
@@ -233,7 +246,7 @@ export function LevelBadge({
   };
 
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+    <div className={className} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
       <div style={{ display: 'flex', gap: '2px' }}>
         {Array.from({ length: maxLevel }).map((_, i) => (
           <motion.div
@@ -261,6 +274,7 @@ interface AchievementBadgeProps {
   name: string;
   unlocked?: boolean;
   rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+  className?: string;
 }
 
 export function AchievementBadge({
@@ -268,6 +282,7 @@ export function AchievementBadge({
   name,
   unlocked = false,
   rarity = 'common',
+  className,
 }: AchievementBadgeProps) {
   const rarityConfig = {
     common: {
@@ -297,6 +312,7 @@ export function AchievementBadge({
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
+      className={className}
       style={{
         position: 'relative',
         display: 'flex',
