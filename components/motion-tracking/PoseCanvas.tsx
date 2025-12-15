@@ -5,10 +5,58 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, CameraOff, RefreshCw, Maximize, Minimize } from 'lucide-react';
 import { PoseLandmark, PoseDetectionResult } from '@/types/pose-tracking';
 
+// MediaPipe types
+interface MediaPipeLandmark {
+  x: number;
+  y: number;
+  z?: number;
+  visibility?: number;
+}
+
+interface MediaPipePoseResults {
+  poseLandmarks?: MediaPipeLandmark[];
+  poseWorldLandmarks?: MediaPipeLandmark[];
+}
+
+interface MediaPipePoseOptions {
+  modelComplexity?: number;
+  smoothLandmarks?: boolean;
+  enableSegmentation?: boolean;
+  smoothSegmentation?: boolean;
+  minDetectionConfidence?: number;
+  minTrackingConfidence?: number;
+}
+
+interface MediaPipePose {
+  setOptions: (options: MediaPipePoseOptions) => void;
+  onResults: (callback: (results: MediaPipePoseResults) => void) => void;
+  send: (input: { image: HTMLVideoElement }) => Promise<void>;
+}
+
+interface MediaPipePoseConstructor {
+  new (config: { locateFile: (file: string) => string }): MediaPipePose;
+}
+
+interface MediaPipeCamera {
+  start: () => Promise<void>;
+  stop: () => void;
+}
+
+interface MediaPipeCameraConstructor {
+  new (
+    video: HTMLVideoElement,
+    options: {
+      onFrame: () => Promise<void>;
+      width: number;
+      height: number;
+    }
+  ): MediaPipeCamera;
+}
+
 declare global {
   interface Window {
-    Pose: any;
-    Camera: any;
+    Pose: MediaPipePoseConstructor;
+    Camera: MediaPipeCameraConstructor;
   }
 }
 
@@ -134,8 +182,8 @@ export default function PoseCanvas({
 }: PoseCanvasProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const poseRef = useRef<any>(null);
-  const cameraRef = useRef<any>(null);
+  const poseRef = useRef<MediaPipePose | null>(null);
+  const cameraRef = useRef<MediaPipeCamera | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
@@ -147,7 +195,7 @@ export default function PoseCanvas({
   // Draw pose landmarks
   const drawPoseLandmarks = useCallback((
     ctx: CanvasRenderingContext2D,
-    landmarks: any[],
+    landmarks: MediaPipeLandmark[],
     canvasWidth: number,
     canvasHeight: number
   ) => {
@@ -161,7 +209,7 @@ export default function PoseCanvas({
       const start = landmarks[startIdx];
       const end = landmarks[endIdx];
 
-      if (start && end && start.visibility > 0.5 && end.visibility > 0.5) {
+      if (start && end && (start.visibility ?? 0) > 0.5 && (end.visibility ?? 0) > 0.5) {
         const color = getLineColor(startIdx, endIdx);
 
         ctx.strokeStyle = color;
@@ -180,7 +228,7 @@ export default function PoseCanvas({
 
     // Draw landmarks
     landmarks.forEach((landmark, idx) => {
-      if (landmark.visibility > 0.5) {
+      if ((landmark.visibility ?? 0) > 0.5) {
         const x = landmark.x * canvasWidth;
         const y = landmark.y * canvasHeight;
         const color = getPointColor(idx);
@@ -233,7 +281,7 @@ export default function PoseCanvas({
 
     labelPositions.forEach(({ idx, label }) => {
       const landmark = landmarks[idx];
-      if (landmark && landmark.visibility > 0.7) {
+      if (landmark && (landmark.visibility ?? 0) > 0.7) {
         const x = landmark.x * canvasWidth;
         const y = landmark.y * canvasHeight;
 
@@ -247,7 +295,7 @@ export default function PoseCanvas({
   }, [showSkeleton]);
 
   // Handle MediaPipe results
-  const onResults = useCallback((results: any) => {
+  const onResults = useCallback((results: MediaPipePoseResults) => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) return;
@@ -260,16 +308,25 @@ export default function PoseCanvas({
       drawPoseLandmarks(ctx, results.poseLandmarks, canvas.width, canvas.height);
 
       // Callback with landmarks
-      const poseLandmarks: PoseLandmark[] = results.poseLandmarks.map((lm: any) => ({
+      const poseLandmarks: PoseLandmark[] = results.poseLandmarks.map((lm: MediaPipeLandmark) => ({
         x: lm.x,
         y: lm.y,
         z: lm.z || 0,
         visibility: lm.visibility || 0,
       }));
 
+      const worldLandmarks: PoseLandmark[] = results.poseWorldLandmarks
+        ? results.poseWorldLandmarks.map((lm: MediaPipeLandmark) => ({
+            x: lm.x,
+            y: lm.y,
+            z: lm.z || 0,
+            visibility: lm.visibility || 0,
+          }))
+        : poseLandmarks;
+
       onPoseDetected?.({
         landmarks: poseLandmarks,
-        worldLandmarks: results.poseWorldLandmarks || poseLandmarks,
+        worldLandmarks,
       });
     } else {
       setPoseDetected(false);
