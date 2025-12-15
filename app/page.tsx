@@ -16,6 +16,9 @@ import {
   User,
   Calendar,
   Clock,
+  CreditCard,
+  Gift,
+  Receipt,
 } from 'lucide-react';
 import { MOCK_MEMBER } from '@/data/mock/members';
 import { MOCK_ROUTINES, AI_RECOMMENDED_ROUTINES } from '@/data/mock/routines';
@@ -28,6 +31,7 @@ import {
   getPTRemainingSessions,
   hasPTMembership,
 } from '@/data/mock/trainers';
+import { getActiveEvents, EventBanner } from '@/data/mock/events';
 
 // Modern Card Component
 const ModernCard = ({
@@ -205,9 +209,11 @@ export default function HomePage() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [currentEventIndex, setCurrentEventIndex] = useState(0);
   const member = MOCK_MEMBER;
   const todayGX = MOCK_GX_CLASSES.slice(0, 3);
   const unreadCount = MOCK_NOTIFICATIONS.filter(n => !n.isRead).length;
+  const activeEvents = getActiveEvents();
 
   // 로그인 상태 확인
   useEffect(() => {
@@ -511,6 +517,116 @@ export default function HomePage() {
             </div>
           </div>
         </motion.section>
+
+        {/* Event/Notice Banner Carousel */}
+        {activeEvents.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.05 }}
+          >
+            <div style={{ position: 'relative' }}>
+              {/* Banner */}
+              <div
+                onClick={() => router.push(activeEvents[currentEventIndex].link)}
+                style={{
+                  borderRadius: '20px',
+                  background: activeEvents[currentEventIndex].bgGradient,
+                  padding: '20px',
+                  cursor: 'pointer',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}
+              >
+                {/* Shine effect */}
+                <motion.div
+                  animate={{ x: ['-100%', '200%'] }}
+                  transition={{ duration: 3, repeat: Infinity, repeatDelay: 3 }}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '50%',
+                    height: '100%',
+                    background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
+                    zIndex: 1,
+                  }}
+                />
+
+                <div style={{ position: 'relative', zIndex: 2, display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <div style={{
+                    width: '56px',
+                    height: '56px',
+                    borderRadius: '16px',
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    backdropFilter: 'blur(10px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '28px',
+                    flexShrink: 0,
+                  }}>
+                    {activeEvents[currentEventIndex].icon}
+                  </div>
+
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                      <span style={{
+                        padding: '3px 8px',
+                        borderRadius: '10px',
+                        background: 'rgba(255, 255, 255, 0.2)',
+                        color: 'white',
+                        fontSize: '10px',
+                        fontWeight: 'bold',
+                      }}>
+                        {activeEvents[currentEventIndex].type === 'event' && '이벤트'}
+                        {activeEvents[currentEventIndex].type === 'notice' && '공지'}
+                        {activeEvents[currentEventIndex].type === 'promo' && '프로모션'}
+                        {activeEvents[currentEventIndex].type === 'gx-special' && 'GX 특강'}
+                      </span>
+                    </div>
+                    <h3 style={{ fontSize: '17px', fontWeight: 'bold', color: 'white', margin: '0 0 4px' }}>
+                      {activeEvents[currentEventIndex].title}
+                    </h3>
+                    <p style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.8)', margin: 0 }}>
+                      {activeEvents[currentEventIndex].subtitle}
+                    </p>
+                  </div>
+
+                  <ChevronRight size={24} color="rgba(255, 255, 255, 0.8)" />
+                </div>
+              </div>
+
+              {/* Pagination Dots */}
+              {activeEvents.length > 1 && (
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  marginTop: '12px',
+                }}>
+                  {activeEvents.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentEventIndex(index)}
+                      style={{
+                        width: currentEventIndex === index ? '20px' : '8px',
+                        height: '8px',
+                        borderRadius: '4px',
+                        background: currentEventIndex === index
+                          ? 'linear-gradient(135deg, #00D9FF, #7209B7)'
+                          : 'rgba(255, 255, 255, 0.2)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </motion.section>
+        )}
 
         {/* QR Scan Banner - 눈에 띄는 큰 배너 */}
         <motion.section
@@ -890,7 +1006,7 @@ export default function HomePage() {
           </div>
         </motion.section>
 
-        {/* PT 예약 바로가기 배너 */}
+        {/* PT 예약/현황 바로가기 배너 */}
         {/* 조건: PT 멤버십이 있고 (다음 예약이 없거나 잔여 회차가 있을 때) 노출 */}
         {(() => {
           const hasPT = hasPTMembership(member.id);
@@ -903,19 +1019,6 @@ export default function HomePage() {
 
           if (!shouldShowBanner) return null;
 
-          // 배너 클릭 로그 함수
-          const handlePTBannerClick = () => {
-            // 클릭 로그 기록
-            console.log('[PT Banner Click Log]', {
-              memberId: member.id,
-              remainingSessions,
-              hasNextBooking: !!nextSession,
-              timestamp: new Date().toISOString(),
-            });
-            // PT 예약 화면으로 바로 이동
-            router.push('/pt/booking');
-          };
-
           return (
             <motion.section
               initial={{ opacity: 0, y: 20 }}
@@ -923,13 +1026,11 @@ export default function HomePage() {
               transition={{ duration: 0.5, delay: 0.3 }}
             >
               <div
-                onClick={handlePTBannerClick}
                 style={{
                   position: 'relative',
                   borderRadius: '20px',
                   padding: '2px',
                   background: 'linear-gradient(135deg, #7209B7, #FF006E)',
-                  cursor: 'pointer',
                   overflow: 'hidden',
                 }}
               >
@@ -973,7 +1074,7 @@ export default function HomePage() {
                       {/* Title Row */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
                         <h3 style={{ fontSize: '17px', fontWeight: 'bold', color: 'white', margin: 0 }}>
-                          PT 예약하기
+                          PT 관리
                         </h3>
                         <span style={{
                           padding: '4px 10px',
@@ -992,22 +1093,70 @@ export default function HomePage() {
                         {nextSession
                           ? `다음 예약: ${nextSession.date} ${nextSession.startTime}`
                           : trainer
-                            ? `${trainer.name} 트레이너와 다음 세션을 예약하세요`
-                            : '지금 바로 PT 세션을 예약해보세요'
+                            ? `${trainer.name} 트레이너와 함께하세요`
+                            : 'PT 예약 및 현황을 확인하세요'
                         }
                       </p>
                     </div>
+                  </div>
 
-                    <ChevronRight size={24} color="#FF006E" />
+                  {/* Action Buttons */}
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '10px',
+                    marginTop: '14px',
+                    paddingTop: '14px',
+                    borderTop: '1px solid rgba(114, 9, 183, 0.3)',
+                  }}>
+                    <button
+                      onClick={() => router.push('/pt/booking')}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        padding: '14px',
+                        background: 'linear-gradient(135deg, #7209B7, #FF006E)',
+                        border: 'none',
+                        borderRadius: '12px',
+                        color: 'white',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 15px rgba(114, 9, 183, 0.3)',
+                      }}
+                    >
+                      <Calendar size={18} />
+                      예약하기
+                    </button>
+                    <button
+                      onClick={() => router.push('/pt/status')}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        padding: '14px',
+                        background: 'rgba(255, 255, 255, 0.08)',
+                        border: '1px solid rgba(114, 9, 183, 0.4)',
+                        borderRadius: '12px',
+                        color: 'white',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Clock size={18} />
+                      예약 현황
+                    </button>
                   </div>
 
                   {/* Info Tags */}
                   <div style={{
                     display: 'flex',
                     gap: '8px',
-                    marginTop: '14px',
-                    paddingTop: '14px',
-                    borderTop: '1px solid rgba(114, 9, 183, 0.3)',
+                    marginTop: '12px',
                   }}>
                     <div style={{
                       flex: 1,
@@ -1019,7 +1168,6 @@ export default function HomePage() {
                       background: 'rgba(255, 255, 255, 0.05)',
                       borderRadius: '10px',
                     }}>
-                      <Calendar size={14} color="#7209B7" />
                       <span style={{ fontSize: '12px', color: '#D1D5DB', fontWeight: 500 }}>
                         {MOCK_PT_MEMBERSHIP.usedSessions}/{MOCK_PT_MEMBERSHIP.totalSessions} 진행
                       </span>
@@ -1034,7 +1182,6 @@ export default function HomePage() {
                       background: 'rgba(255, 255, 255, 0.05)',
                       borderRadius: '10px',
                     }}>
-                      <Clock size={14} color="#FF006E" />
                       <span style={{ fontSize: '12px', color: '#D1D5DB', fontWeight: 500 }}>
                         60분 세션
                       </span>
@@ -1154,7 +1301,7 @@ export default function HomePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.6 }}
         >
-          <ModernCard onClick={() => router.push('/qr-scan/stretching')} style={{ padding: '20px' }}>
+          <ModernCard onClick={() => router.push('/qr-scan/recovery')} style={{ padding: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <div style={{
                 width: '56px',
@@ -1243,6 +1390,175 @@ export default function HomePage() {
               </div>
             </div>
           </ModernCard>
+        </motion.section>
+
+        {/* Payment & Membership Banner */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+        >
+          <div style={{
+            position: 'relative',
+            borderRadius: '20px',
+            padding: '2px',
+            background: 'linear-gradient(135deg, #FFD60A, #FF6B35)',
+            overflow: 'hidden',
+          }}>
+            {/* Shine effect */}
+            <motion.div
+              animate={{ x: ['-100%', '200%'] }}
+              transition={{ duration: 3.5, repeat: Infinity, repeatDelay: 4 }}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '50%',
+                height: '100%',
+                background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent)',
+                zIndex: 10,
+              }}
+            />
+
+            <div style={{
+              background: 'linear-gradient(145deg, rgba(255, 214, 10, 0.1), #0D0D12)',
+              borderRadius: '18px',
+              padding: '20px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
+                {/* Icon */}
+                <div style={{
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '16px',
+                  background: 'linear-gradient(135deg, #FFD60A, #FF6B35)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 4px 20px rgba(255, 214, 10, 0.4)',
+                  flexShrink: 0,
+                }}>
+                  <CreditCard size={28} color="white" />
+                </div>
+
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+                    <h3 style={{ fontSize: '17px', fontWeight: 'bold', color: 'white', margin: 0 }}>
+                      멤버십 & 결제
+                    </h3>
+                    <span style={{
+                      padding: '4px 10px',
+                      borderRadius: '12px',
+                      background: 'rgba(255, 214, 10, 0.2)',
+                      color: '#FFD60A',
+                      fontSize: '11px',
+                      fontWeight: 'bold',
+                    }}>
+                      {(() => {
+                        const daysLeft = Math.ceil((new Date(member.membershipExpiry).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+                        return daysLeft > 0 ? `${daysLeft}일 남음` : '갱신 필요';
+                      })()}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '13px', color: '#9CA3AF', margin: 0 }}>
+                    멤버십 갱신 및 결제 내역을 확인하세요
+                  </p>
+                </div>
+              </div>
+
+              {/* Payment Menu Grid */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '10px',
+              }}>
+                <button
+                  onClick={() => router.push('/payment/renewal')}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '16px 12px',
+                    background: 'linear-gradient(135deg, rgba(255, 214, 10, 0.15), rgba(255, 107, 53, 0.1))',
+                    border: '1px solid rgba(255, 214, 10, 0.3)',
+                    borderRadius: '14px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '12px',
+                    background: 'linear-gradient(135deg, #FFD60A, #FF6B35)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 4px 15px rgba(255, 214, 10, 0.3)',
+                  }}>
+                    <Gift size={20} color="white" />
+                  </div>
+                  <span style={{ fontSize: '12px', color: 'white', fontWeight: 600 }}>멤버십 갱신</span>
+                </button>
+
+                <button
+                  onClick={() => router.push('/payment/checkout')}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '16px 12px',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '14px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '12px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                    <CreditCard size={20} color="#FFD60A" />
+                  </div>
+                  <span style={{ fontSize: '12px', color: '#D1D5DB', fontWeight: 600 }}>결제하기</span>
+                </button>
+
+                <button
+                  onClick={() => router.push('/mypage/usage-history')}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '16px 12px',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '14px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '12px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                    <Receipt size={20} color="#9CA3AF" />
+                  </div>
+                  <span style={{ fontSize: '12px', color: '#D1D5DB', fontWeight: 600 }}>결제 내역</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </motion.section>
       </div>
     </div>

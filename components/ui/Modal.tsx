@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Button from './Button';
 import { X } from 'lucide-react';
 
 interface ModalProps {
@@ -12,7 +11,6 @@ interface ModalProps {
   children: React.ReactNode;
   footer?: React.ReactNode;
   size?: 'sm' | 'md' | 'lg';
-  className?: string;
 }
 
 export default function Modal({
@@ -22,51 +20,122 @@ export default function Modal({
   children,
   footer,
   size = 'md',
-  className = '',
 }: ModalProps) {
-  const sizeClasses = {
-    sm: 'max-w-sm',
-    md: 'max-w-md',
-    lg: 'max-w-lg',
+  const sizeWidths = {
+    sm: '320px',
+    md: '400px',
+    lg: '480px',
   };
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
+          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0, 0, 0, 0.6)',
+              backdropFilter: 'blur(4px)',
+              WebkitBackdropFilter: 'blur(4px)',
+              zIndex: 40,
+            }}
           />
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+
+          {/* Modal Container */}
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 50,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '16px',
+            }}
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className={`${sizeClasses[size]} w-full bg-cyber-mid border border-electric-blue/30 rounded-xl overflow-hidden ${className}`}
+              style={{
+                width: '100%',
+                maxWidth: sizeWidths[size],
+                background: 'linear-gradient(145deg, #1A1A24, #0D0D12)',
+                border: '1px solid rgba(0, 217, 255, 0.3)',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+              }}
             >
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-white/10">
-                <h2 className="text-lg font-bold text-white">{title}</h2>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '20px 24px',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                }}
+              >
+                <h2
+                  style={{
+                    fontSize: '18px',
+                    fontWeight: 'bold',
+                    color: 'white',
+                    margin: 0,
+                  }}
+                >
+                  {title}
+                </h2>
                 <button
                   onClick={onClose}
-                  className="text-gray-400 hover:text-white transition-colors"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '8px',
+                    color: '#9CA3AF',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.color = 'white';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                    e.currentTarget.style.color = '#9CA3AF';
+                  }}
                 >
-                  <X size={24} />
+                  <X size={20} />
                 </button>
               </div>
 
               {/* Content */}
-              <div className="p-6">
+              <div style={{ padding: '24px' }}>
                 {children}
               </div>
 
               {/* Footer */}
               {footer && (
-                <div className="p-6 border-t border-white/10 flex gap-3 justify-end">
+                <div
+                  style={{
+                    padding: '20px 24px',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                    display: 'flex',
+                    gap: '12px',
+                    justifyContent: 'flex-end',
+                  }}
+                >
                   {footer}
                 </div>
               )}

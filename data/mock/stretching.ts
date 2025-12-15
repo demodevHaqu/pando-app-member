@@ -124,6 +124,7 @@ export const MOCK_STRETCHING_EXERCISES = [
     duration: 30,
     targetArea: '목/어깨',
     difficulty: 'easy' as const,
+    youtubeId: 'YVkpdJjC2PI',  // 목 스트레칭 영상
   },
   {
     id: 'ex2',
@@ -133,6 +134,7 @@ export const MOCK_STRETCHING_EXERCISES = [
     duration: 45,
     targetArea: '목/어깨',
     difficulty: 'easy' as const,
+    youtubeId: 'SEdqd1n0cvg',  // 어깨 스트레칭 영상
   },
   {
     id: 'ex3',
@@ -142,6 +144,7 @@ export const MOCK_STRETCHING_EXERCISES = [
     duration: 60,
     targetArea: '허리',
     difficulty: 'medium' as const,
+    youtubeId: 'kqnua4rHVVA',  // 캣카우 영상
   },
   {
     id: 'ex4',
@@ -151,6 +154,7 @@ export const MOCK_STRETCHING_EXERCISES = [
     duration: 40,
     targetArea: '허리',
     difficulty: 'medium' as const,
+    youtubeId: 'tXxXcoDqzEw',  // 허리 스트레칭 영상
   },
   {
     id: 'ex5',
@@ -160,6 +164,7 @@ export const MOCK_STRETCHING_EXERCISES = [
     duration: 45,
     targetArea: '다리',
     difficulty: 'easy' as const,
+    youtubeId: 'FDwpEdxZ4H4',  // 햄스트링 스트레칭 영상
   },
   {
     id: 'ex6',
@@ -169,6 +174,7 @@ export const MOCK_STRETCHING_EXERCISES = [
     duration: 50,
     targetArea: '다리',
     difficulty: 'medium' as const,
+    youtubeId: 'YQmpO9VT2X4',  // 힙 플렉서 영상
   },
   {
     id: 'ex7',
@@ -178,5 +184,6 @@ export const MOCK_STRETCHING_EXERCISES = [
     duration: 30,
     targetArea: '다리',
     difficulty: 'easy' as const,
+    youtubeId: 'k1vfhTRVUtw',  // 종아리 스트레칭 영상
   },
 ];

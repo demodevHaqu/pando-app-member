@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import BottomNav from "@/components/layout/BottomNav";
 import Toast from "@/components/ui/Toast";
+import AlertModal from "@/components/ui/AlertModal";
 import PWAInstall from "@/components/PWAInstall";
 
 export const metadata: Metadata = {
@@ -47,6 +48,7 @@ export default function RootLayout({
           </main>
           <BottomNav />
           <Toast />
+          <AlertModal />
           <PWAInstall />
         </div>
       </body>

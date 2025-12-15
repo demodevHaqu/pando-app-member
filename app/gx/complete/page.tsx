@@ -17,6 +17,7 @@ import {
   MessageSquare,
   Trophy,
 } from 'lucide-react';
+import { showAlert } from '@/components/ui/AlertModal';
 
 // Mock 클래스 완료 데이터
 const MOCK_CLASS_RESULT = {
@@ -52,7 +53,7 @@ function GXCompleteContent() {
 
   const handleSubmitFeedback = () => {
     if (rating === 0) {
-      alert('별점을 선택해주세요');
+      showAlert('별점을 선택해주세요', { type: 'warning' });
       return;
     }
     setIsSubmitted(true);

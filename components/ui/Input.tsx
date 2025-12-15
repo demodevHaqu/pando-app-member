@@ -2,7 +2,6 @@
 
 import React, { forwardRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
 import { Eye, EyeOff, Search, X, AlertCircle } from 'lucide-react';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -38,18 +37,40 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   const isPassword = type === 'password';
   const inputType = isPassword && showPassword ? 'text' : type;
 
-  const baseInputClasses = "w-full bg-transparent text-white placeholder:text-white/40 focus:outline-none py-3";
+  const getContainerBackground = () => {
+    switch (variant) {
+      case 'glass':
+        return 'rgba(255, 255, 255, 0.05)';
+      case 'glow':
+      case 'default':
+      default:
+        return '#1A1A24';
+    }
+  };
 
-  const containerVariants = {
-    default: "bg-cyber-mid border border-white/10",
-    glow: "bg-cyber-mid border border-electric-blue/30",
-    glass: "glass"
+  const getContainerBorder = () => {
+    if (error) return '1px solid rgba(255, 0, 110, 0.5)';
+    if (isFocused) return '1px solid rgba(0, 217, 255, 0.5)';
+    if (variant === 'glow') return '1px solid rgba(0, 217, 255, 0.3)';
+    return '1px solid rgba(255, 255, 255, 0.1)';
+  };
+
+  const getBoxShadow = () => {
+    if (isFocused && !error) return '0 0 20px rgba(0, 217, 255, 0.2)';
+    if (error) return '0 0 20px rgba(255, 0, 110, 0.2)';
+    return 'none';
   };
 
   return (
-    <div className="w-full">
+    <div style={{ width: '100%' }}>
       {label && (
-        <label className="block text-sm font-medium text-white/80 mb-2">
+        <label style={{
+          display: 'block',
+          fontSize: '14px',
+          fontWeight: 500,
+          color: 'rgba(255, 255, 255, 0.8)',
+          marginBottom: '8px',
+        }}>
           {label}
         </label>
       )}
@@ -61,25 +82,32 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
             : isFocused
               ? 'rgba(0, 217, 255, 0.5)'
               : 'rgba(255, 255, 255, 0.1)',
-          boxShadow: isFocused && !error
-            ? '0 0 20px rgba(0, 217, 255, 0.2)'
-            : error
-              ? '0 0 20px rgba(255, 0, 110, 0.2)'
-              : 'none'
+          boxShadow: getBoxShadow()
         }}
-        className={cn(
-          "relative rounded-xl overflow-hidden transition-all duration-300",
-          containerVariants[variant],
-          disabled && "opacity-50 cursor-not-allowed",
-          className
-        )}
+        style={{
+          position: 'relative',
+          borderRadius: '12px',
+          overflow: 'hidden',
+          transition: 'all 0.3s',
+          background: getContainerBackground(),
+          border: getContainerBorder(),
+          opacity: disabled ? 0.5 : 1,
+          cursor: disabled ? 'not-allowed' : 'auto',
+        }}
       >
-        <div className="flex items-center px-4">
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          padding: '0 16px',
+        }}>
           {icon && (
-            <span className={cn(
-              "mr-3 transition-colors",
-              isFocused ? "text-electric-blue" : "text-white/40"
-            )}>
+            <span style={{
+              marginRight: '12px',
+              transition: 'color 0.2s',
+              color: isFocused ? '#00D9FF' : 'rgba(255, 255, 255, 0.4)',
+              display: 'flex',
+              alignItems: 'center',
+            }}>
               {icon}
             </span>
           )}
@@ -90,7 +118,16 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
             disabled={disabled}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            className={cn(baseInputClasses, isPassword || showClear ? "pr-10" : "")}
+            style={{
+              width: '100%',
+              background: 'transparent',
+              color: 'white',
+              padding: '12px 0',
+              paddingRight: isPassword || showClear ? '40px' : '0',
+              border: 'none',
+              outline: 'none',
+              fontSize: '15px',
+            }}
             {...props}
           />
 
@@ -98,7 +135,20 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 text-white/40 hover:text-white transition-colors"
+              style={{
+                position: 'absolute',
+                right: '16px',
+                color: 'rgba(255, 255, 255, 0.4)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'color 0.2s',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = 'white'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)'; }}
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -108,7 +158,20 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
             <button
               type="button"
               onClick={onClear}
-              className="absolute right-4 text-white/40 hover:text-white transition-colors"
+              style={{
+                position: 'absolute',
+                right: '16px',
+                color: 'rgba(255, 255, 255, 0.4)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'color 0.2s',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = 'white'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)'; }}
             >
               <X size={18} />
             </button>
@@ -120,20 +183,40 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="absolute inset-0 -z-10 rounded-xl bg-electric-blue/10 blur-xl"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: -1,
+              borderRadius: '12px',
+              background: 'rgba(0, 217, 255, 0.1)',
+              filter: 'blur(20px)',
+            }}
           />
         )}
       </motion.div>
 
       {error && (
-        <div className="flex items-center gap-2 mt-2 text-power-pink text-sm">
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          marginTop: '8px',
+          color: '#FF006E',
+          fontSize: '14px',
+        }}>
           <AlertCircle size={16} />
           <span>{error}</span>
         </div>
       )}
 
       {resolvedHint && !error && (
-        <p className="mt-2 text-sm text-white/50">{resolvedHint}</p>
+        <p style={{
+          marginTop: '8px',
+          fontSize: '14px',
+          color: 'rgba(255, 255, 255, 0.5)',
+        }}>
+          {resolvedHint}
+        </p>
       )}
     </div>
   );
@@ -215,7 +298,11 @@ export const OTPInput: React.FC<OTPInputProps> = ({
 
   return (
     <div>
-      <div className="flex gap-2 justify-center">
+      <div style={{
+        display: 'flex',
+        gap: '8px',
+        justifyContent: 'center',
+      }}>
         {Array.from({ length }).map((_, index) => (
           <motion.input
             key={index}
@@ -228,18 +315,31 @@ export const OTPInput: React.FC<OTPInputProps> = ({
             onKeyDown={(e) => handleKeyDown(index, e)}
             onPaste={handlePaste}
             whileFocus={{ scale: 1.05, borderColor: 'rgba(0, 217, 255, 0.5)' }}
-            className={cn(
-              "w-12 h-14 text-center text-xl font-bold rounded-xl",
-              "bg-cyber-mid border border-white/10",
-              "text-white focus:outline-none focus:border-electric-blue",
-              "transition-all duration-300",
-              error && "border-power-pink"
-            )}
+            style={{
+              width: '48px',
+              height: '56px',
+              textAlign: 'center',
+              fontSize: '20px',
+              fontWeight: 'bold',
+              borderRadius: '12px',
+              background: '#1A1A24',
+              border: error ? '1px solid #FF006E' : '1px solid rgba(255, 255, 255, 0.1)',
+              color: 'white',
+              outline: 'none',
+              transition: 'all 0.3s',
+            }}
           />
         ))}
       </div>
       {error && (
-        <p className="mt-2 text-sm text-power-pink text-center">{error}</p>
+        <p style={{
+          marginTop: '8px',
+          fontSize: '14px',
+          color: '#FF006E',
+          textAlign: 'center',
+        }}>
+          {error}
+        </p>
       )}
     </div>
   );

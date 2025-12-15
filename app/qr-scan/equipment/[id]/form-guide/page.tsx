@@ -178,8 +178,12 @@ export default function FormGuidePage() {
   };
 
   const handleComplete = () => {
-    alert('자세 가이드를 완료했습니다! 이제 운동을 시작해보세요.');
-    router.back();
+    import('@/components/ui/AlertModal').then(({ showAlert }) => {
+      showAlert('자세 가이드를 완료했습니다!\n이제 운동을 시작해보세요.', {
+        type: 'success',
+        onConfirm: () => router.back(),
+      });
+    });
   };
 
   return (

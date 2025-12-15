@@ -8,6 +8,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import { CheckCircle, Download, Share2, Home, Calendar } from 'lucide-react';
+import { showAlert } from '@/components/ui/AlertModal';
 
 function PaymentSuccessContent() {
   const router = useRouter();
@@ -27,7 +28,7 @@ function PaymentSuccessContent() {
   };
 
   const handleDownloadReceipt = () => {
-    alert('영수증이 다운로드됩니다.');
+    showAlert('영수증이 다운로드됩니다.', { type: 'info' });
   };
 
   const handleShare = () => {
@@ -37,7 +38,7 @@ function PaymentSuccessContent() {
         text: `${paymentInfo.productName} 결제가 완료되었습니다.`,
       });
     } else {
-      alert('공유 기능이 지원되지 않는 환경입니다.');
+      showAlert('공유 기능이 지원되지 않는 환경입니다.', { type: 'info' });
     }
   };
 

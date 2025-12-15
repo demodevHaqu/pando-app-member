@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { CreditCard, Smartphone, Tag, Gift, CheckCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CreditCard, Smartphone, Tag, Gift, CheckCircle, X } from 'lucide-react';
 import { MOCK_COUPONS } from '@/data/mock/payment';
 import {
   ModernCard,
@@ -17,6 +17,13 @@ import {
 } from '@/components/ui/ModernUI';
 import Modal from '@/components/ui/Modal';
 
+// Toast notification type
+interface ToastNotification {
+  id: string;
+  message: string;
+  type: 'success' | 'info' | 'warning' | 'error';
+}
+
 export default function CheckoutPage() {
   const router = useRouter();
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'kakao' | 'naver'>('card');
@@ -25,6 +32,21 @@ export default function CheckoutPage() {
   const [pointsToUse, setPointsToUse] = useState(0);
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [toasts, setToasts] = useState<ToastNotification[]>([]);
+
+  // Add toast notification
+  const showToast = (message: string, type: ToastNotification['type'] = 'success') => {
+    const id = Date.now().toString();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 3000);
+  };
+
+  // Remove toast
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  };
 
   const orderInfo = {
     itemName: 'AI 추천 플랜 (PT 16회)',
@@ -373,6 +395,9 @@ export default function CheckoutPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '400px', overflowY: 'auto' }}>
           <div
             onClick={() => {
+              if (selectedCoupon) {
+                showToast('쿠폰 적용이 해제되었습니다.', 'info');
+              }
               setSelectedCoupon(null);
               setShowCouponModal(false);
             }}
@@ -397,6 +422,10 @@ export default function CheckoutPage() {
                   if (canUse) {
                     setSelectedCoupon(coupon.id);
                     setShowCouponModal(false);
+                    const discountText = coupon.discountType === 'percentage'
+                      ? `${coupon.discountValue}% 할인`
+                      : `${coupon.discountValue.toLocaleString()}원 할인`;
+                    showToast(`${coupon.description} 쿠폰이 적용되었습니다. (${discountText})`, 'success');
                   }
                 }}
                 style={{
@@ -457,6 +486,122 @@ export default function CheckoutPage() {
           </p>
         </div>
       </Modal>
+
+      {/* Toast Notifications - Bottom Left */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: '100px',
+          left: '16px',
+          zIndex: 100,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
+          maxWidth: '320px',
+        }}
+      >
+        <AnimatePresence>
+          {toasts.map((toast) => {
+            const getToastStyle = () => {
+              switch (toast.type) {
+                case 'success':
+                  return {
+                    background: 'rgba(57, 255, 20, 0.15)',
+                    borderColor: 'rgba(57, 255, 20, 0.5)',
+                    iconColor: '#39FF14',
+                  };
+                case 'error':
+                  return {
+                    background: 'rgba(255, 0, 110, 0.15)',
+                    borderColor: 'rgba(255, 0, 110, 0.5)',
+                    iconColor: '#FF006E',
+                  };
+                case 'warning':
+                  return {
+                    background: 'rgba(255, 214, 10, 0.15)',
+                    borderColor: 'rgba(255, 214, 10, 0.5)',
+                    iconColor: '#FFD60A',
+                  };
+                case 'info':
+                default:
+                  return {
+                    background: 'rgba(0, 217, 255, 0.15)',
+                    borderColor: 'rgba(0, 217, 255, 0.5)',
+                    iconColor: '#00D9FF',
+                  };
+              }
+            };
+
+            const toastStyle = getToastStyle();
+
+            return (
+              <motion.div
+                key={toast.id}
+                initial={{ opacity: 0, x: -100, scale: 0.9 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: -100, scale: 0.9 }}
+                style={{
+                  padding: '14px 16px',
+                  borderRadius: '14px',
+                  background: toastStyle.background,
+                  border: `1px solid ${toastStyle.borderColor}`,
+                  backdropFilter: 'blur(10px)',
+                  WebkitBackdropFilter: 'blur(10px)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '10px',
+                      background: `${toastStyle.iconColor}20`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {toast.type === 'success' && <CheckCircle size={18} color={toastStyle.iconColor} />}
+                    {toast.type === 'info' && <Tag size={18} color={toastStyle.iconColor} />}
+                    {toast.type === 'warning' && <Tag size={18} color={toastStyle.iconColor} />}
+                    {toast.type === 'error' && <X size={18} color={toastStyle.iconColor} />}
+                  </div>
+                  <p
+                    style={{
+                      flex: 1,
+                      fontSize: '13px',
+                      color: 'white',
+                      margin: 0,
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    {toast.message}
+                  </p>
+                  <button
+                    onClick={() => removeToast(toast.id)}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      border: 'none',
+                      borderRadius: '6px',
+                      padding: '4px',
+                      color: '#9CA3AF',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

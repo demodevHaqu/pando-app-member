@@ -26,6 +26,7 @@ import {
   GradientIconBox,
 } from '@/components/ui/ModernUI';
 import Modal from '@/components/ui/Modal';
+import { showAlert } from '@/components/ui/AlertModal';
 
 // Mock 쿠폰 데이터
 const MOCK_AVAILABLE_COUPONS = [
@@ -101,7 +102,7 @@ export default function RewardUsePage() {
   const handleExchangeItem = (itemId: string) => {
     const item = MOCK_POINT_ITEMS.find((i) => i.id === itemId);
     if (item && item.points > userPoints) {
-      alert('포인트가 부족합니다');
+      showAlert('포인트가 부족합니다', { type: 'warning' });
       return;
     }
     setSelectedItem(itemId);
@@ -109,13 +110,13 @@ export default function RewardUsePage() {
   };
 
   const confirmUseCoupon = () => {
-    alert('쿠폰이 사용되었습니다!');
+    showAlert('쿠폰이 사용되었습니다!', { type: 'success' });
     setShowUseModal(false);
     setSelectedCoupon(null);
   };
 
   const confirmExchange = () => {
-    alert('교환이 완료되었습니다! 프론트에서 수령해주세요.');
+    showAlert('교환이 완료되었습니다!\n프론트에서 수령해주세요.', { type: 'success' });
     setShowExchangeModal(false);
     setSelectedItem(null);
   };

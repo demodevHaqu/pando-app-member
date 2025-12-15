@@ -10,7 +10,27 @@ export interface Equipment {
     intermediate?: string;
     advanced?: string;
   };
+  youtubeVideos?: {
+    basic?: string;      // YouTube Video ID
+    intermediate?: string;
+    advanced?: string;
+  };
+  recommendedTraining?: RecommendedTraining;
   exercises: EquipmentExercise[];
+}
+
+export interface RecommendedTraining {
+  beginner: TrainingRecommendation;
+  intermediate: TrainingRecommendation;
+  advanced: TrainingRecommendation;
+}
+
+export interface TrainingRecommendation {
+  sets: number;
+  reps: string;           // "8-12" 형태
+  weight: string;         // "체중의 50%" 또는 "20-30kg"
+  restSeconds: number;
+  tips: string[];
 }
 
 export interface EquipmentExercise {

@@ -8,6 +8,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Input from '@/components/ui/Input';
+import { showAlert } from '@/components/ui/AlertModal';
 import {
   Upload,
   Video,
@@ -51,11 +52,11 @@ export default function UGCUploadPage() {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 100 * 1024 * 1024) {
-        alert('파일 크기는 100MB를 초과할 수 없습니다');
+        showAlert('파일 크기는 100MB를 초과할 수 없습니다', { type: 'warning' });
         return;
       }
       if (!file.type.startsWith('video/')) {
-        alert('동영상 파일만 업로드 가능합니다');
+        showAlert('동영상 파일만 업로드 가능합니다', { type: 'warning' });
         return;
       }
       setSelectedFile(file);
@@ -84,15 +85,15 @@ export default function UGCUploadPage() {
 
   const handleUpload = async () => {
     if (!selectedFile) {
-      alert('영상을 선택해주세요');
+      showAlert('영상을 선택해주세요', { type: 'warning' });
       return;
     }
     if (!title.trim()) {
-      alert('제목을 입력해주세요');
+      showAlert('제목을 입력해주세요', { type: 'warning' });
       return;
     }
     if (!selectedCategory) {
-      alert('운동 종류를 선택해주세요');
+      showAlert('운동 종류를 선택해주세요', { type: 'warning' });
       return;
     }
 
@@ -105,8 +106,10 @@ export default function UGCUploadPage() {
     }
 
     setIsUploading(false);
-    alert('영상이 업로드되었습니다! AI 분석 후 피드백을 받아보실 수 있습니다.');
-    router.push('/ugc/video123');
+    showAlert('영상이 업로드되었습니다!\nAI 분석 후 피드백을 받아보실 수 있습니다.', {
+      type: 'success',
+      onConfirm: () => router.push('/ugc/video123'),
+    });
   };
 
   return (
