@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Phone, Lock, MapPin, ChevronRight, Eye, EyeOff } from 'lucide-react';
+import { Phone, Lock, MapPin, ChevronRight, Eye, EyeOff, ArrowLeft, Target, Heart, Sparkles, CheckCircle } from 'lucide-react';
 import {
   ModernCard,
   FeatureCard,
@@ -113,15 +113,111 @@ export default function OnboardingPage() {
     transition: 'all 0.2s',
   });
 
+  // Overall progress: signup (4 steps) + goals + health + complete = 7 total steps
+  const overallProgress = progress; // 1-4 for signup steps (out of 7 total)
+
   return (
     <div style={{ minHeight: '100vh', background: '#0D0D12', paddingBottom: '40px' }}>
-      <PageHeader title="회원가입" showBack={false} />
+      {/* Custom Header with Back to Login */}
+      <div style={{
+        padding: '16px 20px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '16px',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+      }}>
+        <button
+          onClick={() => router.push('/login')}
+          style={{
+            background: 'none',
+            border: 'none',
+            padding: '8px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <ArrowLeft size={24} color="#9CA3AF" />
+        </button>
+        <div>
+          <h1 style={{ fontSize: '18px', fontWeight: 'bold', color: 'white' }}>회원가입</h1>
+          <p style={{ fontSize: '12px', color: '#6B7280' }}>가입과 함께 맞춤 온보딩을 진행합니다</p>
+        </div>
+      </div>
 
       <div style={{ padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        {/* Onboarding Flow Indicator */}
+        {step === 'phone' && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{
+              padding: '16px',
+              background: 'linear-gradient(135deg, rgba(114, 9, 183, 0.15), rgba(0, 217, 255, 0.15))',
+              borderRadius: '14px',
+              border: '1px solid rgba(114, 9, 183, 0.3)',
+            }}
+          >
+            <p style={{ fontSize: '13px', color: '#00D9FF', fontWeight: 'bold', marginBottom: '12px' }}>
+              회원가입 후 진행되는 온보딩 과정
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                background: 'rgba(0, 217, 255, 0.2)',
+                borderRadius: '20px',
+              }}>
+                <CheckCircle size={14} color="#00D9FF" />
+                <span style={{ fontSize: '12px', color: '#00D9FF' }}>계정 생성</span>
+              </div>
+              <ChevronRight size={14} style={{ color: '#6B7280' }} />
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                background: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: '20px',
+              }}>
+                <Target size={14} color="#9CA3AF" />
+                <span style={{ fontSize: '12px', color: '#9CA3AF' }}>운동 목표</span>
+              </div>
+              <ChevronRight size={14} style={{ color: '#6B7280' }} />
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                background: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: '20px',
+              }}>
+                <Heart size={14} color="#9CA3AF" />
+                <span style={{ fontSize: '12px', color: '#9CA3AF' }}>건강 정보</span>
+              </div>
+              <ChevronRight size={14} style={{ color: '#6B7280' }} />
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                background: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: '20px',
+              }}>
+                <Sparkles size={14} color="#9CA3AF" />
+                <span style={{ fontSize: '12px', color: '#9CA3AF' }}>맞춤 루틴</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Progress bar */}
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#6B7280', marginBottom: '8px' }}>
-            <span>Step {progress}/4</span>
+            <span>회원가입 Step {progress}/4</span>
             <span>{Math.round((progress / 4) * 100)}%</span>
           </div>
           <ProgressBar percentage={(progress / 4) * 100} color="blue" height={4} />

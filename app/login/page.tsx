@@ -6,7 +6,6 @@ import { motion } from 'framer-motion';
 import {
   ModernCard,
   PrimaryButton,
-  SecondaryButton,
 } from '@/components/ui/ModernUI';
 import {
   User,
@@ -15,6 +14,11 @@ import {
   EyeOff,
   Dumbbell,
   AlertCircle,
+  UserPlus,
+  Target,
+  Heart,
+  Sparkles,
+  ChevronRight,
 } from 'lucide-react';
 
 // 지정된 아이디/비밀번호
@@ -259,13 +263,133 @@ export default function LoginPage() {
         </div>
       </motion.div>
 
-      {/* Footer */}
+      {/* Divider */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
         style={{
-          marginTop: '48px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '16px',
+          marginTop: '32px',
+        }}
+      >
+        <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.1)' }} />
+        <span style={{ color: '#6B7280', fontSize: '13px' }}>처음이신가요?</span>
+        <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.1)' }} />
+      </motion.div>
+
+      {/* Signup Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        style={{ marginTop: '24px' }}
+      >
+        <button
+          onClick={() => router.push('/onboarding')}
+          style={{
+            width: '100%',
+            padding: '20px',
+            background: 'linear-gradient(135deg, rgba(114, 9, 183, 0.2), rgba(255, 0, 110, 0.2))',
+            borderRadius: '16px',
+            border: '1px solid rgba(114, 9, 183, 0.3)',
+            cursor: 'pointer',
+            textAlign: 'left',
+            transition: 'all 0.3s',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #7209B7, #FF006E)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <UserPlus size={24} color="white" />
+              </div>
+              <div>
+                <h3 style={{ color: 'white', fontSize: '16px', fontWeight: 'bold', marginBottom: '4px' }}>
+                  회원가입하기
+                </h3>
+                <p style={{ color: '#9CA3AF', fontSize: '13px' }}>
+                  가입과 함께 맞춤 온보딩 진행
+                </p>
+              </div>
+            </div>
+            <ChevronRight size={20} style={{ color: '#9CA3AF' }} />
+          </div>
+
+          {/* Onboarding Steps Preview */}
+          <div style={{
+            marginTop: '16px',
+            padding: '16px',
+            background: 'rgba(0, 0, 0, 0.3)',
+            borderRadius: '12px',
+          }}>
+            <p style={{ color: '#7209B7', fontSize: '12px', fontWeight: 'bold', marginBottom: '12px' }}>
+              회원가입 시 함께 진행되는 온보딩
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '6px',
+                  background: 'rgba(0, 217, 255, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <Target size={14} color="#00D9FF" />
+                </div>
+                <span style={{ color: '#D1D5DB', fontSize: '13px' }}>운동 목표 및 성향 설정</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '6px',
+                  background: 'rgba(255, 0, 110, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <Heart size={14} color="#FF006E" />
+                </div>
+                <span style={{ color: '#D1D5DB', fontSize: '13px' }}>건강 정보 및 통증 부위 입력</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '6px',
+                  background: 'rgba(57, 255, 20, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <Sparkles size={14} color="#39FF14" />
+                </div>
+                <span style={{ color: '#D1D5DB', fontSize: '13px' }}>AI 맞춤 루틴 & OT 예약 제안</span>
+              </div>
+            </div>
+          </div>
+        </button>
+      </motion.div>
+
+      {/* Footer */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.7 }}
+        style={{
+          marginTop: '32px',
           textAlign: 'center',
         }}
       >
