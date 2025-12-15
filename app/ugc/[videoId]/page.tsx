@@ -270,7 +270,7 @@ export default function UGCFeedbackPage() {
               <span style={{ fontSize: '13px', color: '#FF006E', fontWeight: 'bold' }}>교정 요청 사항</span>
             </div>
             <p style={{ fontSize: '14px', color: '#E5E7EB', lineHeight: 1.5 }}>
-              "{feedback.correctionRequest}"
+              &quot;{feedback.correctionRequest}&quot;
             </p>
           </motion.div>
         )}
@@ -588,12 +588,12 @@ export default function UGCFeedbackPage() {
                             <span style={{
                               padding: '2px 8px',
                               borderRadius: '6px',
-                              background: `${getPriorityColor(item.priority)}20`,
-                              color: getPriorityColor(item.priority),
+                              background: `${getPriorityColor(item.priority as string)}20`,
+                              color: getPriorityColor(item.priority as string),
                               fontSize: '11px',
                               fontWeight: 'bold',
                             }}>
-                              {getPriorityLabel(item.priority)}
+                              {getPriorityLabel(item.priority as string)}
                             </span>
                           )}
                         </div>
